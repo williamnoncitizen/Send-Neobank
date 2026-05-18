@@ -1,0 +1,2354 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Send · Competitive Matrix V2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0a0a0b;
+        --bg-2: #101012;
+        --surface: #16171a;
+        --surface-2: #1c1d21;
+        --surface-3: #222328;
+        --text: #ffffff;
+        --muted: #a1a3a8;
+        --faint: #6a6c72;
+        --line: #26282d;
+        --line-strong: #34363c;
+        --send: #40fb50;
+        --send-soft: #76ed88;
+        --send-deep: #168328;
+        --yes: #40fb50;
+        --partial: #f7c948;
+        --no: #4a4c52;
+        --info: #89a8ff;
+        --max: 1280px;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "DM Sans", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.45;
+        letter-spacing: -0.005em;
+      }
+
+      h1, h2, h3, p, ul { margin: 0; padding: 0; }
+      ul { list-style: none; }
+      button { font: inherit; cursor: pointer; }
+      a { color: inherit; }
+
+      .page {
+        width: min(var(--max), calc(100% - 36px));
+        margin: 0 auto;
+        padding: 36px 0 80px;
+      }
+
+      /* ===== Topbar ===== */
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 44px;
+      }
+
+      .brand-logo {
+        display: block;
+        width: 112px;
+        height: auto;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .nav a {
+        padding: 9px 14px;
+        border: 1px solid var(--line-strong);
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--muted);
+        text-decoration: none;
+        transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+      }
+
+      .nav a:hover {
+        color: var(--text);
+        border-color: var(--send-deep);
+      }
+
+      .nav a[aria-current="page"] {
+        border-color: var(--send);
+        background: var(--send);
+        color: #052109;
+      }
+
+      /* ===== Hero ===== */
+      .hero { position: relative; }
+
+      .hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px 6px 8px;
+        border: 1px solid var(--line-strong);
+        border-radius: 4px;
+        background: rgba(64, 251, 80, 0.08);
+        color: var(--send);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        margin-bottom: 22px;
+      }
+
+      .hero-eyebrow .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--send);
+        box-shadow: 0 0 0 4px rgba(64, 251, 80, 0.18);
+      }
+
+      .hero h1 {
+        max-width: 980px;
+        font-size: clamp(38px, 5.6vw, 68px);
+        line-height: 0.98;
+        letter-spacing: -0.04em;
+        font-weight: 700;
+      }
+
+      .hero h1 em {
+        font-style: normal;
+        color: var(--send);
+      }
+
+      .hero-lede {
+        max-width: 780px;
+        margin-top: 22px;
+        color: var(--muted);
+        font-size: 19px;
+        line-height: 1.5;
+        text-wrap: balance;
+      }
+
+      /* ===== Story mode strip ===== */
+      .story-mode {
+        margin-top: 36px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .story-card {
+        position: relative;
+        padding: 20px 22px 22px;
+        border: 1px solid var(--line-strong);
+        border-radius: 6px;
+        background: var(--bg-2);
+        color: inherit;
+        text-align: left;
+        cursor: pointer;
+        transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+      }
+
+      .story-card:hover {
+        border-color: var(--send-deep);
+        background: rgba(64, 251, 80, 0.03);
+      }
+
+      .story-card[aria-pressed="true"] {
+        border-color: var(--send);
+        background: rgba(64, 251, 80, 0.07);
+      }
+
+      .story-eyebrow {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--faint);
+        margin-bottom: 10px;
+      }
+
+      .story-card[aria-pressed="true"] .story-eyebrow { color: var(--send); }
+
+      .story-title {
+        font-size: 19px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
+
+      .story-desc {
+        margin-top: 8px;
+        font-size: 13.5px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      /* ===== Insights strip ===== */
+      .insights-strip {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0;
+        margin-top: 22px;
+        padding: 20px;
+        border: 1px solid var(--line-strong);
+        border-radius: 6px;
+        background: linear-gradient(180deg, rgba(64, 251, 80, 0.04), rgba(64, 251, 80, 0) 70%), rgba(16, 16, 18, 0.7);
+      }
+
+      .insight {
+        position: relative;
+        padding: 4px 18px;
+        border-left: 1px solid var(--line);
+      }
+
+      .insight:first-child { border-left: none; padding-left: 6px; }
+
+      .insight-label {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--faint);
+      }
+
+      .insight-value {
+        margin-top: 8px;
+        font-size: 32px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        color: var(--text);
+        line-height: 1;
+      }
+
+      .insight-value .total {
+        font-size: 16px;
+        color: var(--faint);
+        font-weight: 600;
+      }
+
+      .insight-copy {
+        margin-top: 6px;
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+
+      /* ===== Matrix panel ===== */
+      .matrix-panel {
+        margin-top: 22px;
+        border: 1px solid var(--line-strong);
+        border-radius: 6px;
+        background: var(--bg-2);
+        overflow: hidden;
+      }
+
+      /* ===== Controls bar ===== */
+      .controls-bar {
+        position: sticky;
+        top: 0;
+        z-index: 6;
+        background: rgba(16, 16, 18, 0.96);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .controls-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .controls-row:last-child { border-bottom: none; }
+
+      .controls-row .label {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--faint);
+        margin-right: 4px;
+      }
+
+      .group-chips, .preset-row, .phase-row, .companies-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+      }
+
+      .chip {
+        padding: 6px 11px;
+        border: 1px solid var(--line-strong);
+        border-radius: 4px;
+        background: var(--surface);
+        color: var(--muted);
+        font-size: 12.5px;
+        font-weight: 600;
+        transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+      }
+
+      .chip:hover { border-color: var(--send-deep); color: var(--text); }
+
+      .chip[aria-pressed="true"] {
+        border-color: var(--send);
+        background: rgba(64, 251, 80, 0.1);
+        color: var(--text);
+      }
+
+      .chip[aria-pressed="false"] { opacity: 0.55; }
+
+      .chip[data-kind="phase1"][aria-pressed="true"] { border-color: var(--send); background: rgba(64, 251, 80, 0.12); }
+      .chip[data-kind="phase2"][aria-pressed="true"] { border-color: #8aa9ff; background: rgba(137, 168, 255, 0.12); color: var(--text); }
+      .chip[data-kind="phase3"][aria-pressed="true"] { border-color: #c084fc; background: rgba(192, 132, 252, 0.12); color: var(--text); }
+      .chip[data-kind="leads"][aria-pressed="true"] { border-color: var(--send-soft); background: rgba(118, 237, 136, 0.12); color: var(--text); }
+
+      .controls-spacer { flex: 1; }
+
+      .compare-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .compare-select {
+        padding: 7px 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 4px;
+        background: var(--surface);
+        color: var(--text);
+        font-size: 12.5px;
+        font-family: inherit;
+        font-weight: 600;
+      }
+
+      .compare-select:focus {
+        outline: none;
+        border-color: var(--send);
+      }
+
+      .view-toggle {
+        display: inline-flex;
+        border: 1px solid var(--line-strong);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .view-toggle button {
+        padding: 7px 12px;
+        border: none;
+        background: var(--surface);
+        color: var(--muted);
+        font-size: 12.5px;
+        font-weight: 700;
+        border-right: 1px solid var(--line-strong);
+        transition: background 0.15s ease, color 0.15s ease;
+      }
+
+      .view-toggle button:last-child { border-right: none; }
+
+      .view-toggle button[aria-pressed="true"] {
+        background: var(--send);
+        color: #052109;
+      }
+
+      .companies-row {
+        padding: 10px 16px 12px;
+      }
+
+      .company-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 4px;
+        background: var(--surface);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+        transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+      }
+
+      .company-chip[data-company="send"] {
+        border-color: var(--send-deep);
+        background: rgba(64, 251, 80, 0.08);
+        color: var(--text);
+      }
+
+      .company-chip[aria-pressed="false"] { opacity: 0.4; }
+
+      .company-chip:hover { border-color: var(--send-deep); color: var(--text); }
+
+      /* When compare-mode is active, fade the company toggles to signal override */
+      body[data-compare="true"] .companies-row .company-chip,
+      body[data-compare="true"] .companies-row .chip[data-preset],
+      body[data-compare="true"] .companies-row .label {
+        opacity: 0.35;
+        pointer-events: none;
+      }
+
+      body[data-compare="true"] .companies-row::after {
+        content: "Compare mode is active — clear it to use these toggles";
+        display: block;
+        flex-basis: 100%;
+        margin-top: 4px;
+        padding-left: 4px;
+        font-size: 11.5px;
+        color: var(--faint);
+        font-style: italic;
+      }
+
+      .company-chip .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--muted);
+      }
+
+      .company-chip[aria-pressed="true"] .dot { background: var(--send); }
+
+      .utility-btn {
+        padding: 7px 11px;
+        border: 1px solid var(--line-strong);
+        border-radius: 4px;
+        background: var(--surface);
+        color: var(--muted);
+        font-size: 12.5px;
+        font-weight: 700;
+        transition: border-color 0.15s ease, color 0.15s ease;
+      }
+
+      .utility-btn:hover { border-color: var(--send-deep); color: var(--text); }
+
+      /* ===== Legend strip ===== */
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--line);
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .legend-item { display: inline-flex; align-items: center; gap: 7px; }
+
+      .legend-badge {
+        display: inline-grid;
+        place-items: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 4px;
+        font-weight: 800;
+        font-size: 12px;
+      }
+
+      .legend-badge.yes { background: rgba(64, 251, 80, 0.14); color: var(--yes); }
+      .legend-badge.partial { background: rgba(247, 201, 72, 0.14); color: var(--partial); }
+      .legend-badge.no { background: rgba(74, 76, 82, 0.4); color: var(--faint); }
+
+      /* ===== Table ===== */
+      .table-wrap {
+        overflow-x: auto;
+        overflow-y: clip;
+      }
+
+      table {
+        width: 100%;
+        min-width: 1180px;
+        border-collapse: separate;
+        border-spacing: 0;
+      }
+
+      th, td {
+        border-bottom: 1px solid var(--line);
+        border-right: 1px solid var(--line);
+        padding: 14px;
+        vertical-align: top;
+      }
+
+      th {
+        position: sticky;
+        top: var(--header-offset, 184px);
+        z-index: 3;
+        background: var(--surface-3);
+        color: var(--faint);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-align: left;
+        text-transform: uppercase;
+        font-weight: 800;
+        padding: 12px 14px 14px;
+      }
+
+      th:first-child, td:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        min-width: 320px;
+        max-width: 320px;
+        background: var(--surface);
+      }
+
+      th:first-child { z-index: 5; background: var(--surface-3); }
+
+      th:last-child, td:last-child { border-right: 0; }
+
+      tr:last-child td { border-bottom: 0; }
+
+      /* Send column highlight */
+      th[data-company="send"],
+      td[data-company="send"] {
+        background: linear-gradient(180deg, rgba(64, 251, 80, 0.07), rgba(64, 251, 80, 0.04));
+      }
+
+      th[data-company="send"] {
+        color: var(--send);
+        background: linear-gradient(180deg, rgba(64, 251, 80, 0.12), rgba(64, 251, 80, 0.06)), var(--surface-3);
+      }
+
+      .company-head {
+        min-width: 132px;
+        text-align: left;
+      }
+
+      .company-head .name {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 800;
+        color: inherit;
+        letter-spacing: 0;
+        text-transform: none;
+      }
+
+      .coverage-bar {
+        margin-top: 8px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 2px;
+        overflow: hidden;
+      }
+
+      .coverage-fill {
+        height: 100%;
+        background: var(--send);
+        transition: width 0.3s ease;
+      }
+
+      th[data-company="send"] .coverage-fill { background: var(--send); }
+
+      .coverage-pct {
+        margin-top: 5px;
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--faint);
+        letter-spacing: 0.04em;
+      }
+
+      th[data-company="send"] .coverage-pct { color: var(--send-soft); }
+
+      /* Group row */
+      .group-row td {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        padding: 12px 16px;
+        background: #0d0e10;
+        color: var(--send);
+        font-size: 11.5px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .group-row td:hover { background: #111316; }
+
+      .group-row .group-toggle {
+        display: inline-block;
+        width: 10px;
+        margin-right: 8px;
+        color: var(--send);
+        font-family: inherit;
+        transition: transform 0.15s ease;
+      }
+
+      .group-row[data-collapsed="true"] .group-toggle { transform: rotate(-90deg); }
+
+      .group-count {
+        margin-left: 8px;
+        color: var(--faint);
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+      }
+
+      /* Annotated insight row */
+      .annotation-row td {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        padding: 14px 16px 14px 20px;
+        background: #0a0b0d;
+        border-left: 2px solid var(--send-deep);
+        color: var(--muted);
+        font-size: 13px;
+        font-style: normal;
+        line-height: 1.55;
+      }
+
+      .annotation-row td strong {
+        color: var(--send);
+        font-weight: 700;
+        margin-right: 6px;
+      }
+
+      /* Feature cell */
+      .feature-row {
+        transition: background 0.12s ease;
+      }
+
+      .feature-row:hover {
+        background: rgba(255, 255, 255, 0.018);
+      }
+
+      .feature-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 4px;
+      }
+
+      .phase-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 7px;
+        border-radius: 3px;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        line-height: 1.4;
+      }
+
+      .phase-tag.shipped { background: rgba(64, 251, 80, 0.12); color: var(--send); }
+      .phase-tag.phase1 { background: rgba(64, 251, 80, 0.16); color: var(--send); border: 1px solid rgba(64, 251, 80, 0.3); }
+      .phase-tag.phase2 { background: rgba(137, 168, 255, 0.13); color: #a3bcff; }
+      .phase-tag.phase3 { background: rgba(192, 132, 252, 0.13); color: #d4b3ff; }
+
+      .feature-name {
+        color: var(--text);
+        font-weight: 700;
+        font-size: 14px;
+        letter-spacing: -0.015em;
+        line-height: 1.35;
+      }
+
+      .feature-why {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12.5px;
+        line-height: 1.45;
+      }
+
+      .send-rank {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 8px;
+        padding: 4px 8px;
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.025);
+        border: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 11.5px;
+        font-weight: 600;
+      }
+
+      .send-rank.lead {
+        background: rgba(64, 251, 80, 0.08);
+        border-color: rgba(64, 251, 80, 0.28);
+        color: var(--send);
+      }
+
+      .send-rank.lag {
+        background: rgba(247, 201, 72, 0.07);
+        border-color: rgba(247, 201, 72, 0.22);
+        color: #f7c948;
+      }
+
+      .send-rank.behind {
+        background: rgba(255, 100, 100, 0.06);
+        border-color: rgba(255, 100, 100, 0.18);
+        color: #ff9a9a;
+      }
+
+      .send-rank .rank-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      /* Cells */
+      .cell {
+        min-width: 132px;
+      }
+
+      .cell-inner {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .status {
+        display: inline-grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        font-weight: 800;
+        font-size: 14px;
+        line-height: 1;
+        position: relative;
+      }
+
+      .status.yes { background: rgba(64, 251, 80, 0.13); color: var(--yes); }
+      .status.partial { background: rgba(247, 201, 72, 0.13); color: var(--partial); }
+      .status.no { background: rgba(74, 76, 82, 0.32); color: var(--faint); }
+
+      .note {
+        max-width: 150px;
+        color: var(--faint);
+        font-size: 11px;
+        line-height: 1.35;
+      }
+
+      /* Heatmap view: compact, suppress secondary text */
+      body[data-view="heatmap"] .feature-why { display: none; }
+      body[data-view="heatmap"] .send-rank { display: none; }
+      body[data-view="heatmap"] .note { display: none; }
+      body[data-view="heatmap"] .status { width: 28px; height: 28px; font-size: 13px; }
+      body[data-view="heatmap"] td, body[data-view="heatmap"] th { padding: 8px 10px; }
+      body[data-view="heatmap"] th:first-child, body[data-view="heatmap"] td:first-child {
+        min-width: 260px;
+        max-width: 260px;
+      }
+      body[data-view="heatmap"] .feature-meta { margin-bottom: 0; }
+      body[data-view="heatmap"] .feature-name { font-size: 12.5px; }
+      body[data-view="heatmap"] .coverage-pct { display: none; }
+
+      /* Mobile cards (hidden by default) */
+      .mobile-cards { display: none; padding: 16px; gap: 12px; flex-direction: column; }
+
+      .mobile-card {
+        border: 1px solid var(--line-strong);
+        border-radius: 6px;
+        background: var(--surface);
+        padding: 16px;
+      }
+
+      .mobile-card-group {
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--send);
+        margin-bottom: 8px;
+      }
+
+      .mobile-card-rows {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        row-gap: 8px;
+        column-gap: 10px;
+        font-size: 13px;
+      }
+
+      .mobile-card-rows .company { color: var(--muted); }
+      .mobile-card-rows .company.send { color: var(--send); font-weight: 700; }
+
+      /* Empty state */
+      .empty-state {
+        padding: 50px 30px;
+        text-align: center;
+        color: var(--muted);
+      }
+      .empty-state h3 { font-size: 18px; color: var(--text); margin-bottom: 6px; }
+      .empty-state p { font-size: 14px; }
+
+      /* ===== Footer info ===== */
+      .footer-info {
+        margin-top: 30px;
+        display: grid;
+        gap: 14px;
+      }
+
+      .footer-info details {
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        background: var(--bg-2);
+        padding: 12px 14px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .footer-info details summary {
+        cursor: pointer;
+        color: var(--text);
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: -0.01em;
+        outline: none;
+      }
+
+      .footer-info details[open] summary { margin-bottom: 10px; }
+
+      .footer-info a { color: var(--send-soft); text-decoration: none; }
+      .footer-info a:hover { text-decoration: underline; }
+
+      .disclaimer {
+        font-size: 11.5px;
+        color: var(--faint);
+        line-height: 1.5;
+        padding: 0 4px;
+      }
+
+      .keyboard-hint {
+        font-size: 11.5px;
+        color: var(--faint);
+        padding: 0 4px;
+      }
+
+      .keyboard-hint kbd {
+        display: inline-block;
+        padding: 1px 5px;
+        border: 1px solid var(--line-strong);
+        border-radius: 3px;
+        background: var(--bg-2);
+        color: var(--muted);
+        font-family: inherit;
+        font-size: 10.5px;
+        font-weight: 700;
+        margin: 0 2px;
+      }
+
+      /* Help dialog */
+      .help-dialog {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(8px);
+        z-index: 100;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+      }
+
+      .help-dialog[data-open="true"] { display: flex; }
+
+      .help-box {
+        max-width: 480px;
+        width: 100%;
+        background: var(--surface);
+        border: 1px solid var(--line-strong);
+        border-radius: 6px;
+        padding: 26px;
+      }
+
+      .help-box h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: -0.02em;
+        margin-bottom: 16px;
+      }
+
+      .help-box ul { display: grid; gap: 10px; }
+      .help-box li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .help-box li span:last-child {
+        color: var(--text);
+      }
+
+      .help-close {
+        margin-top: 18px;
+        padding: 8px 14px;
+        border: 1px solid var(--line-strong);
+        border-radius: 4px;
+        background: var(--bg-2);
+        color: var(--muted);
+        font-size: 12.5px;
+        font-weight: 700;
+      }
+
+      /* ===== Responsive ===== */
+      @media (max-width: 1100px) {
+        .story-mode { grid-template-columns: 1fr; }
+        .insights-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 0; }
+      }
+
+      @media (max-width: 720px) {
+        .hero h1 { font-size: 38px; }
+        .hero-lede { font-size: 16px; }
+        .insights-strip { grid-template-columns: 1fr; padding: 16px; }
+        .insight { border-left: none; border-top: 1px solid var(--line); padding: 14px 0 0; }
+        .insight:first-child { border-top: none; padding-top: 0; }
+        .table-wrap { display: none; }
+        .mobile-cards { display: flex; }
+        .controls-row { padding: 10px 12px; }
+        .nav { font-size: 12px; }
+      }
+    </style>
+  </head>
+  <body data-view="detail">
+    <main class="page">
+      <!-- ===== Topbar ===== -->
+      <div class="topbar">
+        <div class="brand">
+          <img class="brand-logo" src="./assets/send-logo.svg" alt="Send" />
+        </div>
+        <nav class="nav" aria-label="Site navigation">
+          <a href="./index.html">Path to Neobank</a>
+          <a href="./matrix.html" aria-current="page">Comp Analysis</a>
+        </nav>
+      </div>
+
+      <!-- ===== Hero ===== -->
+      <section class="hero">
+        <span class="hero-eyebrow"><span class="dot"></span>Competitive matrix · Q2 2026</span>
+        <h1>Send, <em>compared to everyone.</em></h1>
+        <p class="hero-lede">
+          Every feature against every competitor. This is what the roadmap is built on.
+        </p>
+      </section>
+
+      <!-- ===== Story mode strip ===== -->
+      <section class="story-mode" aria-label="Story mode presets">
+        <button class="story-card" type="button" data-story="leads" aria-pressed="false">
+          <div class="story-eyebrow">Where Send wins</div>
+          <div class="story-title">Identity + crypto rails</div>
+          <p class="story-desc">Sendtags, passkeys, links, USDC, self-custody. The features
+          Send already does best, with no Phase 2 dependencies.</p>
+        </button>
+        <button class="story-card" type="button" data-story="gaps" aria-pressed="false">
+          <div class="story-eyebrow">Where Send must catch up</div>
+          <div class="story-title">Account loop + spend</div>
+          <p class="story-desc">Cards, mobile wallet pay, ACH cash-out, multi-currency.
+          The Phase 1 + Phase 2 gates that block the neobank claim.</p>
+        </button>
+        <button class="story-card" type="button" data-story="vs" aria-pressed="false">
+          <div class="story-eyebrow">Crypto vs mainstream</div>
+          <div class="story-title">Two playbooks, one matrix</div>
+          <p class="story-desc">Mainstream players own the account. Crypto-natives own
+          the wallet. Send is the only one trying to own both.</p>
+        </button>
+      </section>
+
+      <!-- ===== Insights strip ===== -->
+      <section class="insights-strip" aria-label="Live insights">
+        <div class="insight">
+          <div class="insight-label">Send leads</div>
+          <div class="insight-value" id="insightLead">0<span class="total"> /<span data-total>0</span></span></div>
+          <p class="insight-copy">Features where Send is yes and ≤2 others match</p>
+        </div>
+        <div class="insight">
+          <div class="insight-label">Send missing</div>
+          <div class="insight-value" id="insightMissing">0<span class="total"> /<span data-total>0</span></span></div>
+          <p class="insight-copy">Features Send doesn't have where most others do</p>
+        </div>
+        <div class="insight">
+          <div class="insight-label">Send partial</div>
+          <div class="insight-value" id="insightPartial">0<span class="total"> /<span data-total>0</span></span></div>
+          <p class="insight-copy">Features Send has partially — upgrade candidates</p>
+        </div>
+        <div class="insight">
+          <div class="insight-label">Phase 1 blockers visible</div>
+          <div class="insight-value" id="insightP1">0<span class="total"> /<span data-total>0</span></span></div>
+          <p class="insight-copy">Phase 1 gates Send hasn't shipped yet</p>
+        </div>
+      </section>
+
+      <!-- ===== Matrix panel ===== -->
+      <section class="matrix-panel" aria-label="Feature matrix">
+        <div class="controls-bar">
+          <!-- Row 1: group chips -->
+          <div class="controls-row">
+            <span class="label">Groups</span>
+            <div class="group-chips" id="groupChips" role="group" aria-label="Filter by group"></div>
+          </div>
+
+          <!-- Row 2: phase tags + presets + view toggle + compare + utilities -->
+          <div class="controls-row">
+            <span class="label">View</span>
+            <div class="view-toggle" role="group" aria-label="View mode">
+              <button type="button" data-view-mode="detail" aria-pressed="true">Detail</button>
+              <button type="button" data-view-mode="heatmap" aria-pressed="false">Heatmap</button>
+            </div>
+            <span class="label" style="margin-left:8px">Story</span>
+            <div class="phase-row" id="phaseRow">
+              <button class="chip" type="button" data-kind="phase1" data-phase-filter="phase1" aria-pressed="false">Phase 1 blockers</button>
+              <button class="chip" type="button" data-kind="phase2" data-phase-filter="phase2" aria-pressed="false">Phase 2 gates</button>
+              <button class="chip" type="button" data-kind="phase3" data-phase-filter="phase3" aria-pressed="false">Phase 3 gates</button>
+              <button class="chip" type="button" data-kind="leads" data-phase-filter="leads" aria-pressed="false">Where Send leads</button>
+            </div>
+            <div class="controls-spacer"></div>
+            <div class="compare-wrap">
+              <span class="label">Compare</span>
+              <select class="compare-select" id="compareSelect" aria-label="Compare Send to one competitor">
+                <option value="">All competitors</option>
+              </select>
+            </div>
+            <button class="utility-btn" type="button" id="exportBtn" title="Export current view as CSV">Export CSV</button>
+            <button class="utility-btn" type="button" id="helpBtn" title="Keyboard shortcuts">? Shortcuts</button>
+          </div>
+
+          <!-- Row 3: company toggles + presets -->
+          <div class="controls-row companies-row">
+            <span class="label">Set</span>
+            <button class="chip" type="button" data-preset="all" aria-pressed="true">All</button>
+            <button class="chip" type="button" data-preset="crypto" aria-pressed="false">Crypto</button>
+            <button class="chip" type="button" data-preset="mainstream" aria-pressed="false">Mainstream</button>
+            <span class="label" style="margin-left:14px">Toggle</span>
+            <div class="group-chips" id="companyChips"></div>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="legend" aria-label="Legend">
+          <span class="legend-item"><span class="legend-badge yes">✓</span>Clearly supported</span>
+          <span class="legend-item"><span class="legend-badge partial">◐</span>Present, limited, or adjacent</span>
+          <span class="legend-item"><span class="legend-badge no">—</span>Not found in current research</span>
+          <span class="legend-item" style="color:var(--faint)">Hover any cell to see source notes</span>
+        </div>
+
+        <div class="table-wrap" id="tableWrap">
+          <table id="matrixTable">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <!-- Mobile stacked cards -->
+        <div class="mobile-cards" id="mobileCards"></div>
+      </section>
+
+      <!-- ===== Footer info ===== -->
+      <section class="footer-info">
+        <p class="keyboard-hint">
+          Shortcuts: <kbd>h</kbd> heatmap · <kbd>c</kbd> compare · <kbd>e</kbd> export · <kbd>?</kbd> help · <kbd>Esc</kbd> reset
+        </p>
+        <details>
+          <summary>Sources and verification</summary>
+          <p>
+            Source pages reviewed: Send (app + docs), KAST (
+            <a href="https://www.kast.xyz">homepage</a>,
+            <a href="https://www.kast.xyz/blog/kast-tag-send-money-instantly-and-for-free-to-any-kast-user">KAST Tag</a>),
+            Revolut (
+            <a href="https://www.revolut.com">homepage</a>,
+            <a href="https://www.revolut.com/business/business-account">business</a>),
+            Wise (
+            <a href="https://wise.com">homepage</a>,
+            <a href="https://wise.com/us/interest">interest</a>,
+            <a href="https://wise.com/help/articles/6DtiR7Ugdp7hfoKJHfRfvJ/whats-a-wisetag-and-how-do-i-use-it">Wisetag</a>),
+            Nubank (
+            <a href="https://nubank.com.br">homepage</a>,
+            <a href="https://nubank.com.br/nu/nubank-criptomoeda">Nubank Cripto</a>),
+            Brighty, Wirex,
+            Cash App (
+            <a href="https://cash.app">cash.app</a>,
+            <a href="https://cash.app/bank">banking</a>,
+            <a href="https://cash.app/card">card</a>,
+            <a href="https://cash.app/bitcoin">bitcoin</a>,
+            <a href="https://cash.app/security">security</a>),
+            Phantom Cash (
+            <a href="https://phantom.com/cash">homepage</a>,
+            <a href="https://help.phantom.com/hc/en-us/articles/44799497237395-About-Phantom-Cash">help</a>),
+            Ether.fi Cash, Tuyo, Avici. All scores reflect live or announced features as of Q2 2026.
+          </p>
+        </details>
+        <p class="disclaimer">
+          Yield, interest, APY, earn, and rewards references are informational only.
+          Access may depend on third-party programs, variable rates, region, eligibility,
+          and provider terms; capital may be at risk. Send does not custody or guarantee
+          third-party yields.
+        </p>
+      </section>
+    </main>
+
+    <!-- Help dialog -->
+    <div class="help-dialog" id="helpDialog" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+      <div class="help-box">
+        <h3 id="helpTitle">Keyboard shortcuts</h3>
+        <ul>
+          <li><span>Toggle heatmap view</span><span><kbd>h</kbd></span></li>
+          <li><span>Compare mode (cycle competitor)</span><span><kbd>c</kbd></span></li>
+          <li><span>Export current view (CSV)</span><span><kbd>e</kbd></span></li>
+          <li><span>Reset all filters</span><span><kbd>Esc</kbd></span></li>
+          <li><span>Show this help</span><span><kbd>?</kbd></span></li>
+        </ul>
+        <button class="help-close" type="button" id="helpClose">Close</button>
+      </div>
+    </div>
+
+    <script>
+      // ============================================================
+      // DATA
+      // ============================================================
+      const companies = [
+        { id: "send", name: "Send", category: "send" },
+        { id: "cashapp", name: "Cash App", category: "mainstream" },
+        { id: "phantomcash", name: "Phantom Cash", category: "crypto" },
+        { id: "etherfi", name: "Ether.fi Cash", category: "crypto" },
+        { id: "tuyo", name: "Tuyo", category: "crypto" },
+        { id: "avici", name: "Avici", category: "crypto" },
+        { id: "kast", name: "KAST", category: "crypto" },
+        { id: "revolut", name: "Revolut", category: "mainstream" },
+        { id: "wise", name: "Wise", category: "mainstream" },
+        { id: "nubank", name: "Nubank", category: "mainstream" },
+        { id: "brighty", name: "Brighty", category: "crypto" },
+        { id: "wirex", name: "Wirex", category: "crypto" },
+      ];
+
+      // phase: shipped | phase1 | phase2 | phase3
+      const featureRows = [
+        {
+          group: "Identity + UX",
+          feature: "Mobile app / web access",
+          why: "Users need a familiar surface before any money feature matters.",
+          phase: "shipped",
+          scores: {
+            send: ["yes", "PWA + iOS/Android"],
+            cashapp: ["yes", "Mobile app"],
+            phantomcash: ["yes", "Inside Phantom app"],
+            etherfi: ["yes", "Web/app experience"],
+            tuyo: ["yes", "Mobile app"],
+            avici: ["yes", "Mobile app"],
+            kast: ["yes", "Mobile app"],
+            revolut: ["yes", "Mobile app"],
+            wise: ["yes", "Mobile app"],
+            nubank: ["yes", "Mobile app"],
+            brighty: ["yes", "Mobile app"],
+            wirex: ["yes", "Mobile app"],
+          },
+        },
+        {
+          group: "Identity + UX",
+          feature: "Payment links / public receiving page",
+          why: "Important for social money, creators, freelancers, and easy receiving.",
+          phase: "shipped",
+          scores: {
+            send: ["yes", "Send Links + profile"],
+            cashapp: ["partial", "$Cashtag + requests"],
+            phantomcash: ["partial", "Username receive"],
+            etherfi: ["no", ""],
+            tuyo: ["no", ""],
+            avici: ["no", ""],
+            kast: ["partial", "KAST Tag + QR; no public page found"],
+            revolut: ["yes", "Payment links"],
+            wise: ["yes", "Wisetag link + QR"],
+            nubank: ["partial", "Pix QR/Cobrança; no public profile"],
+            brighty: ["no", ""],
+            wirex: ["no", ""],
+          },
+        },
+        {
+          group: "Identity + UX",
+          feature: "Usernames / payment handles",
+          why: "Reduces address and bank-detail friction in peer-to-peer payments.",
+          phase: "shipped",
+          scores: {
+            send: ["yes", "Send Tags"],
+            cashapp: ["yes", "$Cashtag"],
+            phantomcash: ["yes", "Phantom username"],
+            etherfi: ["no", ""],
+            tuyo: ["no", ""],
+            avici: ["no", ""],
+            kast: ["yes", "KAST Tag"],
+            revolut: ["partial", "Peer network behavior"],
+            wise: ["yes", "Wisetag"],
+            nubank: ["no", ""],
+            brighty: ["no", ""],
+            wirex: ["no", ""],
+          },
+        },
+        {
+          group: "Identity + UX",
+          feature: "Passkeys / modern passwordless access",
+          why: "Improves onboarding and account security without seed-phrase friction.",
+          phase: "shipped",
+          scores: {
+            send: ["yes", "Passkeys"],
+            cashapp: ["partial", "Face/fingerprint/PIN"],
+            phantomcash: ["no", ""],
+            etherfi: ["no", ""],
+            tuyo: ["no", ""],
+            avici: ["yes", "Passkeys"],
+            kast: ["no", ""],
+            revolut: ["no", ""],
+            wise: ["no", ""],
+            nubank: ["no", ""],
+            brighty: ["no", ""],
+            wirex: ["no", ""],
+          },
+        },
+        {
+          group: "Account + Funding",
+          feature: "Bank-style account / local account details",
+          why: "This is what makes an app feel like a real account, not only a wallet.",
+          phase: "phase1",
+          scores: {
+            send: ["no", "Deposits only"],
+            cashapp: ["yes", "Account + routing"],
+            phantomcash: ["partial", "US except NY; KYC"],
+            etherfi: ["partial", "Cash account, no local details"],
+            tuyo: ["yes", "Partner virtual accounts/IBANs"],
+            avici: ["yes", "USD/EUR virtual bank accounts"],
+            kast: ["yes", "Virtual US account/routing identifiers"],
+            revolut: ["yes", "Core account"],
+            wise: ["yes", "Local account details"],
+            nubank: ["yes", "Digital account"],
+            brighty: ["yes", "IBAN + fiat account"],
+            wirex: ["partial", "Multi-currency accounts"],
+          },
+        },
+        {
+          group: "Account + Funding",
+          feature: "Fiat deposits via bank rails",
+          why: "Users need a path from bank money into the app.",
+          phase: "phase1",
+          scores: {
+            send: ["partial", "US bank on/off-ramp only"],
+            cashapp: ["yes", "Direct deposit"],
+            phantomcash: ["partial", "US except NY; KYC"],
+            etherfi: ["partial", "Fiat load supported"],
+            tuyo: ["yes", "Partner fiat deposits"],
+            avici: ["yes", "ACH/Fedwire/SEPA onramps"],
+            kast: ["yes", "ACH/Fedwire via partners"],
+            revolut: ["yes", "Bank funding"],
+            wise: ["yes", "Bank transfer funding"],
+            nubank: ["yes", "Account deposits"],
+            brighty: ["yes", "SEPA/FPS/FedWire"],
+            wirex: ["yes", "SEPA/FPS/ACH/PIX"],
+          },
+        },
+        {
+          group: "Account + Funding",
+          feature: "Debit card / Apple Pay funding",
+          why: "Fast first funding matters for activation.",
+          phase: "phase1",
+          scores: {
+            send: ["no", "Not live in app"],
+            cashapp: ["partial", "Add cash + paper deposits"],
+            phantomcash: ["partial", "US except NY; KYC"],
+            etherfi: ["no", ""],
+            tuyo: ["no", "No card funding found"],
+            avici: ["no", "No card funding found"],
+            kast: ["no", "No card funding found"],
+            revolut: ["partial", "Funding varies by market"],
+            wise: ["yes", "Debit card funding"],
+            nubank: ["partial", "Card/account flows"],
+            brighty: ["no", ""],
+            wirex: ["no", ""],
+          },
+        },
+        {
+          group: "Account + Funding",
+          feature: "Multi-currency fiat balances",
+          why: "Useful for travel, freelancers, and cross-border users.",
+          phase: "phase2",
+          scores: {
+            send: ["no", "USDC-led"],
+            cashapp: ["no", "USD-led"],
+            phantomcash: ["no", "USD/CASH-led"],
+            etherfi: ["no", "Crypto-led"],
+            tuyo: ["yes", "Multiple currencies"],
+            avici: ["partial", "USD/EUR accounts"],
+            kast: ["partial", "Local currency support"],
+            revolut: ["yes", "36+ currencies"],
+            wise: ["yes", "40+ currencies"],
+            nubank: ["no", "Market-local"],
+            brighty: ["yes", "Fiat + crypto"],
+            wirex: ["yes", "Multi-currency"],
+          },
+        },
+        {
+          group: "Account + Funding",
+          feature: "Stablecoin / crypto wallet",
+          why: "Required for stablecoin-native neobank positioning.",
+          phase: "shipped",
+          scores: {
+            send: ["yes", "USDC + tokens"],
+            cashapp: ["partial", "Bitcoin live; stablecoins announced"],
+            phantomcash: ["yes", "CASH + Phantom wallet"],
+            etherfi: ["yes", "Crypto vault"],
+            tuyo: ["yes", "USDC + crypto"],
+            avici: ["yes", "USDC + crypto wallet"],
+            kast: ["yes", "Stablecoin account"],
+            revolut: ["partial", "Custodial crypto"],
+            wise: ["no", ""],
+            nubank: ["yes", "Nubank Cripto + USDC"],
+            brighty: ["yes", "Stablecoins + crypto"],
+            wirex: ["yes", "Stablecoins + crypto"],
+          },
+        },
+        {
+          group: "Account + Funding",
+          feature: "Self-custody",
+          why: "A strategic differentiator against custodial crypto neobanks.",
+          phase: "shipped",
+          scores: {
+            send: ["yes", "Non-custodial wallet"],
+            cashapp: ["no", "Custodial; BTC withdrawals"],
+            phantomcash: ["yes", "Self-custodial Cash account"],
+            etherfi: ["yes", "User-owned vault"],
+            tuyo: ["yes", "Self-custodial"],
+            avici: ["yes", "Self-custody + AA"],
+            kast: ["no", ""],
+            revolut: ["no", ""],
+            wise: ["no", ""],
+            nubank: ["no", ""],
+            brighty: ["no", ""],
+            wirex: ["no", ""],
+          },
+        },
+        {
+          group: "Money Movement",
+          feature: "Instant peer-to-peer transfers",
+          why: "Core daily-money behavior.",
+          phase: "shipped",
+          scores: {
+            send: ["yes", "USDC transfers"],
+            cashapp: ["yes", "Instant P2P"],
+            phantomcash: ["yes", "Phantom username"],
+            etherfi: ["no", ""],
+            tuyo: ["partial", "Tuyo transfers"],
+            avici: ["partial", "Wallet transfers"],
+            kast: ["yes", "KAST network"],
+            revolut: ["yes", "Revolut-to-Revolut"],
+            wise: ["partial", "Fast transfers, not social-first"],
+            nubank: ["yes", "Pix"],
+            brighty: ["partial", "Transfers supported"],
+            wirex: ["yes", "Wirex transfers"],
+          },
+        },
+        {
+          group: "Money Movement",
+          feature: "International transfers",
+          why: "Major neobank and cross-border use case.",
+          phase: "shipped",
+          scores: {
+            send: ["yes", "USDC global transfers"],
+            cashapp: ["no", "Domestic focus"],
+            phantomcash: ["no", "US-only Cash launch"],
+            etherfi: ["no", "Card spend, not transfers"],
+            tuyo: ["yes", "Global transfers"],
+            avici: ["no", "Not positioned as transfer app"],
+            kast: ["yes", "Global transfers"],
+            revolut: ["yes", "140+ countries"],
+            wise: ["yes", "Core product"],
+            nubank: ["no", "Not a global focus"],
+            brighty: ["yes", "Fiat + crypto rails"],
+            wirex: ["yes", "Global transfers"],
+          },
+        },
+        {
+          group: "Money Movement",
+          feature: "External crypto wallet withdrawals",
+          why: "Important for crypto users who expect asset portability.",
+          phase: "shipped",
+          scores: {
+            send: ["yes", "External wallet"],
+            cashapp: ["partial", "Bitcoin withdrawals"],
+            phantomcash: ["yes", "Solana wallet"],
+            etherfi: ["yes", "EVM vault withdrawals"],
+            tuyo: ["partial", "Self-custody; verify UX"],
+            avici: ["yes", "External wallet withdrawals"],
+            kast: ["yes", "Crypto withdrawals"],
+            revolut: ["partial", "Asset-dependent"],
+            wise: ["no", ""],
+            nubank: ["partial", "Gradual rollout"],
+            brighty: ["yes", "Crypto rails"],
+            wirex: ["yes", "External wallets"],
+          },
+        },
+        {
+          group: "Money Movement",
+          feature: "Bank cash-out / fiat withdrawals",
+          why: "Completes the money loop from app balance back to bank rails.",
+          phase: "phase1",
+          scores: {
+            send: ["partial", "US bank off-ramp only"],
+            cashapp: ["yes", "Bank cash-out"],
+            phantomcash: ["partial", "US bank withdrawals; KYC"],
+            etherfi: ["partial", "SEPA EUR; rails vary"],
+            tuyo: ["partial", "Partner fiat withdrawals"],
+            avici: ["no", "No bank cash-out found"],
+            kast: ["yes", "ACH/Fedwire/local rails"],
+            revolut: ["yes", "Bank transfers"],
+            wise: ["yes", "Bank payouts"],
+            nubank: ["yes", "Bank account"],
+            brighty: ["yes", "Fiat withdrawals"],
+            wirex: ["yes", "Cash-out flows"],
+          },
+        },
+        {
+          group: "Spend",
+          feature: "Physical debit / payment card",
+          why: "Table-stakes for neobank perception and everyday spend.",
+          phase: "phase3",
+          scores: {
+            send: ["no", ""],
+            cashapp: ["yes", "Cash App Card"],
+            phantomcash: ["partial", "Virtual; physical not found"],
+            etherfi: ["partial", "Physical ordering in listed countries"],
+            tuyo: ["partial", "Physical card coming soon"],
+            avici: ["yes", "Physical Visa card"],
+            kast: ["yes", "KAST Card"],
+            revolut: ["yes", "Debit cards"],
+            wise: ["yes", "Wise Card"],
+            nubank: ["yes", "Nubank Card"],
+            brighty: ["yes", "Mastercard"],
+            wirex: ["yes", "Visa/Mastercard"],
+          },
+        },
+        {
+          group: "Spend",
+          feature: "Virtual card",
+          why: "Fast activation and safer online purchasing.",
+          phase: "phase1",
+          scores: {
+            send: ["no", ""],
+            cashapp: ["yes", "Card details"],
+            phantomcash: ["partial", "Virtual card; US except NY"],
+            etherfi: ["yes", "Virtual card"],
+            tuyo: ["yes", "Virtual card"],
+            avici: ["yes", "Virtual Visa card"],
+            kast: ["yes", "Instant virtual card"],
+            revolut: ["yes", "Virtual + disposable"],
+            wise: ["yes", "Virtual card"],
+            nubank: ["yes", "Digital card"],
+            brighty: ["partial", "Card support"],
+            wirex: ["yes", "Virtual + physical card"],
+          },
+        },
+        {
+          group: "Spend",
+          feature: "Apple Pay / Google Pay spend",
+          why: "Makes card utility immediate on mobile.",
+          phase: "phase1",
+          scores: {
+            send: ["no", "Deposits only"],
+            cashapp: ["yes", "Wallet pay"],
+            phantomcash: ["partial", "US except NY; card activation"],
+            etherfi: ["yes", "Apple/Google Pay"],
+            tuyo: ["yes", "Apple Pay + Google Pay"],
+            avici: ["yes", "Apple Pay + Google Pay"],
+            kast: ["yes", "Wallet pay"],
+            revolut: ["yes", "Wallet pay"],
+            wise: ["yes", "Wallet pay"],
+            nubank: ["yes", "Wallet pay"],
+            brighty: ["yes", "Apple Pay + Google Pay"],
+            wirex: ["yes", "Wallet pay"],
+          },
+        },
+        {
+          group: "Spend",
+          feature: "Global merchant acceptance",
+          why: "Turns the product into an everyday spending account.",
+          phase: "phase1",
+          scores: {
+            send: ["no", ""],
+            cashapp: ["partial", "Visa accepted; market-limited"],
+            phantomcash: ["partial", "Visa; US except NY users"],
+            etherfi: ["yes", "100M+ locations"],
+            tuyo: ["yes", "175M+ locations"],
+            avici: ["yes", "Visa acceptance"],
+            kast: ["yes", "150M+ merchants"],
+            revolut: ["yes", "Card network"],
+            wise: ["yes", "160 countries"],
+            nubank: ["partial", "Card network, market-led"],
+            brighty: ["yes", "Mastercard global"],
+            wirex: ["yes", "80M+ merchants"],
+          },
+        },
+        {
+          group: "Spend",
+          feature: "ATM withdrawals",
+          why: "Cash access matters for real-world account utility.",
+          phase: "phase3",
+          scores: {
+            send: ["no", ""],
+            cashapp: ["yes", "40K+ no-fee ATMs"],
+            phantomcash: ["no", "ATM not supported"],
+            etherfi: ["partial", "Physical card ATM; fees/limits"],
+            tuyo: ["no", "ATM not supported"],
+            avici: ["no", "No ATM support found"],
+            kast: ["yes", "Visa ATMs"],
+            revolut: ["yes", "ATM support"],
+            wise: ["yes", "ATM support"],
+            nubank: ["partial", "Market-dependent"],
+            brighty: ["partial", "Card-led"],
+            wirex: ["yes", "Free allowance"],
+          },
+        },
+        {
+          group: "Grow + Monetize",
+          feature: "Savings / APY / yield",
+          why: "Gives users a reason to keep balances in the app.",
+          phase: "shipped",
+          scores: {
+            send: ["yes", "USDC yield"],
+            cashapp: ["yes", "High-interest savings"],
+            phantomcash: ["yes", "CASH interest"],
+            etherfi: ["partial", "ether.fi earn ecosystem"],
+            tuyo: ["yes", "Up to 11% APY"],
+            avici: ["no", "No yield found"],
+            kast: ["yes", "Up to 7% APY"],
+            revolut: ["yes", "Savings"],
+            wise: ["yes", "Wise Interest"],
+            nubank: ["yes", "Yield + Caixinhas"],
+            brighty: ["yes", "Earning vaults"],
+            wirex: ["yes", "Yield products"],
+          },
+        },
+        {
+          group: "Grow + Monetize",
+          feature: "Investments",
+          why: "Broadens daily banking into wealth building.",
+          phase: "phase2",
+          scores: {
+            send: ["no", ""],
+            cashapp: ["yes", "Stocks + ETFs"],
+            phantomcash: ["no", ""],
+            etherfi: ["partial", "DeFi collateral, not stocks"],
+            tuyo: ["partial", "Earn strategies, not stocks"],
+            avici: ["no", ""],
+            kast: ["no", ""],
+            revolut: ["yes", "Stocks + ETFs"],
+            wise: ["no", ""],
+            nubank: ["yes", "Investments"],
+            brighty: ["no", ""],
+            wirex: ["no", ""],
+          },
+        },
+        {
+          group: "Grow + Monetize",
+          feature: "Crypto trading / swaps",
+          why: "Lets crypto users rebalance without leaving the app.",
+          phase: "shipped",
+          scores: {
+            send: ["yes", "Swap tokens"],
+            cashapp: ["partial", "Bitcoin live; stablecoins announced"],
+            phantomcash: ["yes", "Phantom swaps"],
+            etherfi: ["partial", "Spend crypto, no swap UI found"],
+            tuyo: ["partial", "Token conversion"],
+            avici: ["yes", "Wallet swaps"],
+            kast: ["partial", "Crypto conversion"],
+            revolut: ["yes", "Crypto trading"],
+            wise: ["no", ""],
+            nubank: ["yes", "Nubank Cripto"],
+            brighty: ["partial", "Crypto support"],
+            wirex: ["yes", "Exchange"],
+          },
+        },
+        {
+          group: "Grow + Monetize",
+          feature: "Rewards / cashback",
+          why: "Turns usage into retention and incentives.",
+          phase: "phase2",
+          scores: {
+            send: ["yes", "Referral rewards"],
+            cashapp: ["yes", "Offers"],
+            phantomcash: ["no", "No cashback found"],
+            etherfi: ["yes", "Cashback"],
+            tuyo: ["partial", "Buy Now, Pay Maybe"],
+            avici: ["partial", "Visa perks/miles"],
+            kast: ["yes", "Cashback"],
+            revolut: ["yes", "Points/perks"],
+            wise: ["no", ""],
+            nubank: ["yes", "Rewards/cashback"],
+            brighty: ["no", ""],
+            wirex: ["yes", "Cryptoback"],
+          },
+        },
+        {
+          group: "Trust + Operations",
+          feature: "Security controls",
+          why: "Money apps need visible controls, not only backend security.",
+          phase: "phase2",
+          scores: {
+            send: ["partial", "Passkeys + custody"],
+            cashapp: ["yes", "Security lock + card lock"],
+            phantomcash: ["yes", "PIN + card lock"],
+            etherfi: ["yes", "Vault + spend limits"],
+            tuyo: ["yes", "Self-custody + privacy"],
+            avici: ["yes", "Passkeys + self-custody"],
+            kast: ["yes", "Card controls"],
+            revolut: ["yes", "Controls"],
+            wise: ["yes", "2FA + card controls"],
+            nubank: ["yes", "App controls"],
+            brighty: ["yes", "Security messaging"],
+            wirex: ["yes", "SCA + controls"],
+          },
+        },
+        {
+          group: "Trust + Operations",
+          feature: "Fraud protection / real-time alerts",
+          why: "Trust is a product feature when users store and move money.",
+          phase: "phase3",
+          scores: {
+            send: ["no", "Not prominent"],
+            cashapp: ["yes", "Fraud monitoring + alerts"],
+            phantomcash: ["partial", "Fraud prevention, no alerts found"],
+            etherfi: ["partial", "Vault security, no alerts found"],
+            tuyo: ["no", "No alerts found"],
+            avici: ["no", "No alerts found"],
+            kast: ["yes", "Fraud controls"],
+            revolut: ["yes", "Fraud prevention"],
+            wise: ["yes", "Transaction checks"],
+            nubank: ["yes", "Scam alerts"],
+            brighty: ["partial", "Security, less alert-led"],
+            wirex: ["yes", "Anti-fraud"],
+          },
+        },
+        {
+          group: "Trust + Operations",
+          feature: "Customer support infrastructure",
+          why: "Critical for account, card, bank, and transfer failures.",
+          phase: "phase2",
+          scores: {
+            send: ["yes", "Support docs"],
+            cashapp: ["yes", "Support center"],
+            phantomcash: ["yes", "Help center"],
+            etherfi: ["yes", "Help center"],
+            tuyo: ["partial", "Support paths"],
+            avici: ["partial", "Docs + Visa benefits"],
+            kast: ["partial", "Support available"],
+            revolut: ["yes", "Support"],
+            wise: ["yes", "Support"],
+            nubank: ["yes", "Support as product"],
+            brighty: ["yes", "Help center"],
+            wirex: ["yes", "Help + support"],
+          },
+        },
+      ];
+
+      // Editorial annotations between groups.
+      const annotations = {
+        "Identity + UX":
+          "<strong>Identity is Send's strongest stack.</strong> Send and Avici are the only two with passkeys; only Send, Cash App, Phantom, KAST, and Wise have real handles. This is where Send leads.",
+        "Account + Funding":
+          "<strong>The chasm starts here.</strong> Every mainstream and most crypto-native competitors have a bank-style account. Send doesn't. Closing this gap is the single biggest Phase 1 unlock.",
+        "Money Movement":
+          "<strong>Send is best-in-class globally, blocked locally.</strong> USDC global transfers beat every fiat rail on speed and cost — but the cash-out loop back to a US bank is still partial.",
+        "Spend":
+          "<strong>Send's biggest hole.</strong> Send has zero spend coverage. Every other competitor in this matrix has at least a virtual card. This is the wall between social money and neobank.",
+        "Grow + Monetize":
+          "<strong>Yield is shipped, the rest is open.</strong> Send already has USDC yield. Tiered yield, investments, and richer cashback are the Phase 2 upgrades that move Send from 'has yield' to 'competitive with Cash App and Revolut.'",
+        "Trust + Operations":
+          "<strong>Trust is the silent Phase 2 gate.</strong> Most competitors lead with visible fraud alerts and security controls. Send has the security primitives but doesn't surface them as product features yet.",
+      };
+
+      const groups = [...new Set(featureRows.map((row) => row.group))];
+
+      // ============================================================
+      // STATE
+      // ============================================================
+      const state = {
+        companiesVisible: new Set(companies.map((c) => c.id)),
+        groupsCollapsed: new Set(),
+        groupsActive: new Set(groups),
+        phaseFilter: null,
+        view: "detail",
+        compareWith: "",
+        story: null,
+        activePreset: "all",
+      };
+
+      // ============================================================
+      // STATE PERSISTENCE (URL hash)
+      // ============================================================
+      function encodeState() {
+        const params = new URLSearchParams();
+        if (state.companiesVisible.size !== companies.length) {
+          params.set("c", [...state.companiesVisible].join(","));
+        }
+        if (state.groupsActive.size !== groups.length) {
+          params.set("g", [...state.groupsActive].map((g) => g.replace(/\s+/g, "_")).join(","));
+        }
+        if (state.phaseFilter) params.set("p", state.phaseFilter);
+        if (state.view !== "detail") params.set("v", state.view);
+        if (state.compareWith) params.set("vs", state.compareWith);
+        if (state.story) params.set("s", state.story);
+        const hash = params.toString();
+        if (hash) window.location.hash = hash;
+        else history.replaceState(null, "", window.location.pathname);
+      }
+
+      function decodeState() {
+        const hash = window.location.hash.slice(1);
+        if (!hash) return;
+        const params = new URLSearchParams(hash);
+        if (params.has("c")) {
+          state.companiesVisible = new Set(params.get("c").split(",").filter(Boolean));
+          if (!state.companiesVisible.has("send")) state.companiesVisible.add("send");
+        }
+        if (params.has("g")) {
+          const wanted = new Set(params.get("g").split(",").map((g) => g.replace(/_/g, " ")));
+          state.groupsActive = new Set(groups.filter((g) => wanted.has(g)));
+          if (state.groupsActive.size === 0) state.groupsActive = new Set(groups);
+        }
+        if (params.has("p")) state.phaseFilter = params.get("p");
+        if (params.has("v")) state.view = params.get("v");
+        if (params.has("vs")) state.compareWith = params.get("vs");
+        if (params.has("s")) state.story = params.get("s");
+      }
+
+      // ============================================================
+      // HELPERS
+      // ============================================================
+      function score(s) {
+        return s === "yes" ? 1 : s === "partial" ? 0.5 : 0;
+      }
+
+      function getVisibleCompanies() {
+        if (state.compareWith) {
+          return companies.filter((c) => c.id === "send" || c.id === state.compareWith);
+        }
+        return companies.filter((c) => state.companiesVisible.has(c.id));
+      }
+
+      function getFilteredRows() {
+        return featureRows.filter((row) => {
+          if (!state.groupsActive.has(row.group)) return false;
+          if (state.phaseFilter) {
+            if (state.phaseFilter === "leads") {
+              if (!isSendLeading(row)) return false;
+            } else if (row.phase !== state.phaseFilter) {
+              return false;
+            }
+          }
+          return true;
+        });
+      }
+
+      function isSendLeading(row) {
+        const sendScore = row.scores.send ? score(row.scores.send[0]) : 0;
+        if (sendScore < 1) return false;
+        const others = companies.filter((c) => c.id !== "send");
+        const yesCount = others.filter((c) => row.scores[c.id] && row.scores[c.id][0] === "yes").length;
+        return yesCount <= 4;
+      }
+
+      function computeSendRank(row, visibleCompanies) {
+        const sendData = row.scores.send;
+        if (!sendData) return null;
+        const sendStatus = sendData[0];
+        const others = visibleCompanies.filter((c) => c.id !== "send");
+        if (others.length === 0) return null;
+        const yesCount = others.filter((c) => row.scores[c.id] && row.scores[c.id][0] === "yes").length;
+        const partialCount = others.filter((c) => row.scores[c.id] && row.scores[c.id][0] === "partial").length;
+        const total = others.length;
+
+        if (sendStatus === "yes") {
+          if (yesCount === 0) return { tone: "lead", text: `Send is the only one with this` };
+          if (yesCount <= 2) return { tone: "lead", text: `Send leads — only ${yesCount + 1} of ${total + 1} have this` };
+          return { tone: "neutral", text: `Send among ${yesCount + 1} of ${total + 1} that have this` };
+        }
+        if (sendStatus === "partial") {
+          if (yesCount >= total / 2) return { tone: "lag", text: `Send partial — ${yesCount} of ${total} are full yes` };
+          return { tone: "lag", text: `Send partial — ${yesCount} of ${total} have it fully` };
+        }
+        if (yesCount >= 8) return { tone: "behind", text: `Send missing — ${yesCount} of ${total} have this` };
+        if (yesCount >= 4) return { tone: "behind", text: `Send missing — ${yesCount} of ${total} have this` };
+        if (yesCount > 0) return { tone: "lag", text: `Send missing — ${yesCount} of ${total} have this` };
+        return { tone: "neutral", text: `Nobody has this yet` };
+      }
+
+      function statusGlyph(status) {
+        if (status === "yes") return "✓";
+        if (status === "partial") return "◐";
+        return "—";
+      }
+
+      // ============================================================
+      // RENDER: COMPANY CHIPS
+      // ============================================================
+      function renderCompanyChips() {
+        const wrap = document.getElementById("companyChips");
+        wrap.innerHTML = companies
+          .map(
+            (c) => `
+              <button class="company-chip" type="button" data-company="${c.id}" aria-pressed="${state.companiesVisible.has(c.id)}">
+                <span class="dot"></span>${c.name}
+              </button>
+            `,
+          )
+          .join("");
+      }
+
+      // ============================================================
+      // RENDER: GROUP CHIPS
+      // ============================================================
+      function renderGroupChips() {
+        const wrap = document.getElementById("groupChips");
+        wrap.innerHTML = groups
+          .map(
+            (g) => `
+              <button class="chip" type="button" data-group="${g}" aria-pressed="${state.groupsActive.has(g)}">
+                ${g}
+              </button>
+            `,
+          )
+          .join("");
+      }
+
+      // ============================================================
+      // RENDER: COMPARE SELECT
+      // ============================================================
+      function renderCompareSelect() {
+        const select = document.getElementById("compareSelect");
+        const options = ['<option value="">All competitors</option>']
+          .concat(
+            companies
+              .filter((c) => c.id !== "send")
+              .map((c) => `<option value="${c.id}" ${state.compareWith === c.id ? "selected" : ""}>Send vs ${c.name}</option>`),
+          )
+          .join("");
+        select.innerHTML = options;
+      }
+
+      // ============================================================
+      // RENDER: PRESET + PHASE BUTTONS
+      // ============================================================
+      function renderPresets() {
+        document.querySelectorAll("[data-preset]").forEach((btn) => {
+          btn.setAttribute("aria-pressed", btn.dataset.preset === state.activePreset ? "true" : "false");
+        });
+        document.querySelectorAll("[data-phase-filter]").forEach((btn) => {
+          btn.setAttribute("aria-pressed", btn.dataset.phaseFilter === state.phaseFilter ? "true" : "false");
+        });
+        document.querySelectorAll("[data-view-mode]").forEach((btn) => {
+          btn.setAttribute("aria-pressed", btn.dataset.viewMode === state.view ? "true" : "false");
+        });
+        document.querySelectorAll("[data-story]").forEach((btn) => {
+          btn.setAttribute("aria-pressed", btn.dataset.story === state.story ? "true" : "false");
+        });
+      }
+
+      // ============================================================
+      // RENDER: COVERAGE BARS for THEAD
+      // ============================================================
+      function buildHead(visibleCompanies, filteredRows) {
+        // Compute coverage per company across filtered rows
+        const totals = {};
+        visibleCompanies.forEach((c) => {
+          let sum = 0;
+          let count = 0;
+          filteredRows.forEach((row) => {
+            const cell = row.scores[c.id];
+            if (cell) {
+              sum += score(cell[0]);
+              count++;
+            }
+          });
+          totals[c.id] = count > 0 ? sum / count : 0;
+        });
+
+        const cells = visibleCompanies
+          .map((c) => {
+            const pct = Math.round(totals[c.id] * 100);
+            return `
+              <th class="company-head" data-company="${c.id}">
+                <div class="name">${c.name}</div>
+                <div class="coverage-bar"><div class="coverage-fill" style="width:${pct}%"></div></div>
+                <div class="coverage-pct">${pct}% coverage</div>
+              </th>
+            `;
+          })
+          .join("");
+
+        return `<tr><th>Feature</th>${cells}</tr>`;
+      }
+
+      // ============================================================
+      // RENDER: MAIN TABLE
+      // ============================================================
+      function renderTable() {
+        const visibleCompanies = getVisibleCompanies();
+        const filteredRows = getFilteredRows();
+        const tbody = document.querySelector("#matrixTable tbody");
+        const thead = document.querySelector("#matrixTable thead");
+
+        thead.innerHTML = buildHead(visibleCompanies, filteredRows);
+
+        if (filteredRows.length === 0) {
+          tbody.innerHTML = `
+            <tr><td colspan="${visibleCompanies.length + 1}">
+              <div class="empty-state">
+                <h3>No features match these filters</h3>
+                <p>Try removing the phase filter, clearing compare mode, or toggling groups back on.</p>
+              </div>
+            </td></tr>
+          `;
+          renderMobileCards(visibleCompanies, filteredRows);
+          updateInsights(filteredRows, visibleCompanies);
+          return;
+        }
+
+        // Group rows by group name (only emit rows whose group is in groupsActive)
+        const rowsByGroup = {};
+        filteredRows.forEach((row) => {
+          if (!rowsByGroup[row.group]) rowsByGroup[row.group] = [];
+          rowsByGroup[row.group].push(row);
+        });
+
+        let html = "";
+        groups.forEach((groupName) => {
+          if (!rowsByGroup[groupName]) return;
+          const collapsed = state.groupsCollapsed.has(groupName);
+          const rows = rowsByGroup[groupName];
+
+          html += `
+            <tr class="group-row" data-group="${groupName}" data-collapsed="${collapsed}">
+              <td colspan="${visibleCompanies.length + 1}">
+                <span class="group-toggle">▾</span>${groupName}
+                <span class="group-count">${rows.length} feature${rows.length === 1 ? "" : "s"}</span>
+              </td>
+            </tr>
+          `;
+
+          if (!collapsed) {
+            // Annotation row (only when no phase filter — annotations are editorial summaries of the whole group)
+            if (annotations[groupName] && !state.phaseFilter) {
+              html += `
+                <tr class="annotation-row" data-annotation="${groupName}">
+                  <td colspan="${visibleCompanies.length + 1}">${annotations[groupName]}</td>
+                </tr>
+              `;
+            }
+
+            rows.forEach((row) => {
+              const rank = computeSendRank(row, visibleCompanies);
+              const phaseClass = row.phase === "shipped" ? "shipped" : row.phase;
+              const phaseLabel =
+                row.phase === "shipped" ? "Shipped" :
+                row.phase === "phase1" ? "Phase 1" :
+                row.phase === "phase2" ? "Phase 2" : "Phase 3";
+
+              html += `
+                <tr class="feature-row">
+                  <td>
+                    <div class="feature-meta">
+                      <span class="phase-tag ${phaseClass}">${phaseLabel}</span>
+                    </div>
+                    <div class="feature-name">${row.feature}</div>
+                    <div class="feature-why">${row.why}</div>
+                    ${rank ? `<div class="send-rank ${rank.tone}"><span class="rank-dot"></span>${rank.text}</div>` : ""}
+                  </td>
+                  ${visibleCompanies
+                    .map((c) => {
+                      const [status, note] = row.scores[c.id] || ["no", ""];
+                      return `
+                        <td class="cell" data-company="${c.id}">
+                          <div class="cell-inner">
+                            <span class="status ${status}" title="${note ? note.replace(/"/g, "&quot;") : ""}">${statusGlyph(status)}</span>
+                            ${note ? `<div class="note">${note}</div>` : ""}
+                          </div>
+                        </td>
+                      `;
+                    })
+                    .join("")}
+                </tr>
+              `;
+            });
+          }
+        });
+
+        tbody.innerHTML = html;
+        renderMobileCards(visibleCompanies, filteredRows);
+        updateInsights(filteredRows, visibleCompanies);
+      }
+
+      // ============================================================
+      // RENDER: MOBILE CARDS
+      // ============================================================
+      function renderMobileCards(visibleCompanies, filteredRows) {
+        const wrap = document.getElementById("mobileCards");
+        if (filteredRows.length === 0) {
+          wrap.innerHTML = `<div class="empty-state"><h3>No features match these filters</h3></div>`;
+          return;
+        }
+        const html = filteredRows
+          .map((row) => {
+            const phaseLabel =
+              row.phase === "shipped" ? "Shipped" :
+              row.phase === "phase1" ? "Phase 1" :
+              row.phase === "phase2" ? "Phase 2" : "Phase 3";
+            const cells = visibleCompanies
+              .map((c) => {
+                const [status, note] = row.scores[c.id] || ["no", ""];
+                return `
+                  <span class="company ${c.id === "send" ? "send" : ""}">${c.name}</span>
+                  <span><span class="status ${status}">${statusGlyph(status)}</span> ${note ? `<span class="note" style="margin-left:6px">${note}</span>` : ""}</span>
+                `;
+              })
+              .join("");
+            return `
+              <div class="mobile-card">
+                <div class="mobile-card-group">${row.group} · ${phaseLabel}</div>
+                <div class="feature-name">${row.feature}</div>
+                <div class="feature-why" style="margin-top:6px">${row.why}</div>
+                <div class="mobile-card-rows">${cells}</div>
+              </div>
+            `;
+          })
+          .join("");
+        wrap.innerHTML = html;
+      }
+
+      // ============================================================
+      // RENDER: INSIGHTS
+      // ============================================================
+      function updateInsights(filteredRows, visibleCompanies) {
+        let leads = 0;
+        let missing = 0;
+        let partial = 0;
+        let p1blockers = 0;
+
+        filteredRows.forEach((row) => {
+          const sendData = row.scores.send;
+          if (!sendData) return;
+          const sendStatus = sendData[0];
+          if (sendStatus === "yes" && isSendLeading(row)) leads++;
+          if (sendStatus === "partial") partial++;
+          if (sendStatus === "no") {
+            const others = companies.filter((c) => c.id !== "send");
+            const yesCount = others.filter((c) => row.scores[c.id] && row.scores[c.id][0] === "yes").length;
+            if (yesCount >= 4) missing++;
+          }
+          if ((sendStatus === "no" || sendStatus === "partial") && row.phase === "phase1") p1blockers++;
+        });
+
+        const total = filteredRows.length;
+        setInsight("insightLead", leads, total);
+        setInsight("insightMissing", missing, total);
+        setInsight("insightPartial", partial, total);
+        setInsight("insightP1", p1blockers, total);
+      }
+
+      function setInsight(id, value, total) {
+        const el = document.getElementById(id);
+        el.innerHTML = `${value}<span class="total"> /<span data-total>${total}</span></span>`;
+      }
+
+      // ============================================================
+      // ACTIONS
+      // ============================================================
+      function applyPreset(preset) {
+        state.activePreset = preset;
+        state.compareWith = "";
+        if (preset === "all") {
+          state.companiesVisible = new Set(companies.map((c) => c.id));
+        } else if (preset === "crypto") {
+          state.companiesVisible = new Set(["send", ...companies.filter((c) => c.category === "crypto").map((c) => c.id)]);
+        } else if (preset === "mainstream") {
+          state.companiesVisible = new Set(["send", ...companies.filter((c) => c.category === "mainstream").map((c) => c.id)]);
+        }
+        renderCompanyChips();
+        renderCompareSelect();
+        renderPresets();
+        renderTable();
+        encodeState();
+      }
+
+      function toggleCompany(id) {
+        if (state.companiesVisible.has(id)) {
+          if (state.companiesVisible.size === 1) return;
+          state.companiesVisible.delete(id);
+        } else {
+          state.companiesVisible.add(id);
+        }
+        state.activePreset = "custom";
+        state.compareWith = "";
+        renderCompanyChips();
+        renderCompareSelect();
+        renderPresets();
+        renderTable();
+        encodeState();
+      }
+
+      function toggleGroup(group) {
+        if (state.groupsActive.has(group)) {
+          if (state.groupsActive.size === 1) return;
+          state.groupsActive.delete(group);
+        } else {
+          state.groupsActive.add(group);
+        }
+        renderGroupChips();
+        renderTable();
+        encodeState();
+      }
+
+      function setPhaseFilter(phase) {
+        state.phaseFilter = state.phaseFilter === phase ? null : phase;
+        renderPresets();
+        renderTable();
+        encodeState();
+      }
+
+      function setView(view) {
+        state.view = view;
+        document.body.dataset.view = view;
+        renderPresets();
+        encodeState();
+      }
+
+      function setCompare(id) {
+        state.compareWith = id;
+        if (id) state.activePreset = "custom";
+        document.body.dataset.compare = id ? "true" : "false";
+        renderPresets();
+        renderTable();
+        encodeState();
+      }
+
+      function applyStory(story) {
+        const newStory = state.story === story ? null : story;
+        state.story = newStory;
+        if (newStory === "leads") {
+          state.phaseFilter = "leads";
+          state.activePreset = "all";
+          state.companiesVisible = new Set(companies.map((c) => c.id));
+          state.compareWith = "";
+        } else if (newStory === "gaps") {
+          state.phaseFilter = "phase1";
+          state.activePreset = "all";
+          state.companiesVisible = new Set(companies.map((c) => c.id));
+          state.compareWith = "";
+        } else if (newStory === "vs") {
+          state.phaseFilter = null;
+          state.activePreset = "all";
+          state.companiesVisible = new Set(companies.map((c) => c.id));
+          state.compareWith = "";
+        } else {
+          state.phaseFilter = null;
+        }
+        renderCompanyChips();
+        renderPresets();
+        renderTable();
+        encodeState();
+      }
+
+      function resetAll() {
+        state.companiesVisible = new Set(companies.map((c) => c.id));
+        state.groupsActive = new Set(groups);
+        state.groupsCollapsed.clear();
+        state.phaseFilter = null;
+        state.view = "detail";
+        state.compareWith = "";
+        state.story = null;
+        state.activePreset = "all";
+        document.body.dataset.view = "detail";
+        document.body.dataset.compare = "false";
+        renderAll();
+        encodeState();
+      }
+
+      // ============================================================
+      // CSV EXPORT
+      // ============================================================
+      function exportCSV() {
+        const visibleCompanies = getVisibleCompanies();
+        const filteredRows = getFilteredRows();
+        const header = ["Group", "Phase", "Feature", "Why", ...visibleCompanies.map((c) => c.name), ...visibleCompanies.map((c) => `${c.name} note`)];
+        const lines = [header.join(",")];
+        filteredRows.forEach((row) => {
+          const line = [
+            `"${row.group}"`,
+            `"${row.phase}"`,
+            `"${row.feature.replace(/"/g, '""')}"`,
+            `"${row.why.replace(/"/g, '""')}"`,
+            ...visibleCompanies.map((c) => `"${(row.scores[c.id] && row.scores[c.id][0]) || "no"}"`),
+            ...visibleCompanies.map((c) => `"${((row.scores[c.id] && row.scores[c.id][1]) || "").replace(/"/g, '""')}"`),
+          ];
+          lines.push(line.join(","));
+        });
+        const csv = lines.join("\n");
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `send-matrix-${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      // ============================================================
+      // RENDER ALL
+      // ============================================================
+      function renderAll() {
+        renderCompanyChips();
+        renderGroupChips();
+        renderCompareSelect();
+        renderPresets();
+        renderTable();
+      }
+
+      // ============================================================
+      // EVENT WIRING
+      // ============================================================
+      document.getElementById("companyChips").addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-company]");
+        if (!btn) return;
+        toggleCompany(btn.dataset.company);
+      });
+
+      document.getElementById("groupChips").addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-group]");
+        if (!btn) return;
+        toggleGroup(btn.dataset.group);
+      });
+
+      document.querySelectorAll("[data-preset]").forEach((btn) => {
+        btn.addEventListener("click", () => applyPreset(btn.dataset.preset));
+      });
+
+      document.querySelectorAll("[data-phase-filter]").forEach((btn) => {
+        btn.addEventListener("click", () => setPhaseFilter(btn.dataset.phaseFilter));
+      });
+
+      document.querySelectorAll("[data-view-mode]").forEach((btn) => {
+        btn.addEventListener("click", () => setView(btn.dataset.viewMode));
+      });
+
+      document.querySelectorAll("[data-story]").forEach((btn) => {
+        btn.addEventListener("click", () => applyStory(btn.dataset.story));
+      });
+
+      document.getElementById("compareSelect").addEventListener("change", (e) => {
+        setCompare(e.target.value);
+      });
+
+      document.getElementById("exportBtn").addEventListener("click", exportCSV);
+
+      document.getElementById("helpBtn").addEventListener("click", () => {
+        document.getElementById("helpDialog").dataset.open = "true";
+      });
+
+      document.getElementById("helpClose").addEventListener("click", () => {
+        document.getElementById("helpDialog").dataset.open = "false";
+      });
+
+      document.getElementById("helpDialog").addEventListener("click", (e) => {
+        if (e.target.id === "helpDialog") {
+          document.getElementById("helpDialog").dataset.open = "false";
+        }
+      });
+
+      // Group row toggle (collapsible)
+      document.querySelector("#matrixTable tbody").addEventListener("click", (e) => {
+        const groupRow = e.target.closest(".group-row");
+        if (!groupRow) return;
+        const group = groupRow.dataset.group;
+        if (state.groupsCollapsed.has(group)) {
+          state.groupsCollapsed.delete(group);
+        } else {
+          state.groupsCollapsed.add(group);
+        }
+        renderTable();
+      });
+
+      // Keyboard shortcuts
+      document.addEventListener("keydown", (e) => {
+        if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT" || e.target.tagName === "TEXTAREA") {
+          if (e.key === "Escape") e.target.blur();
+          return;
+        }
+        if (document.getElementById("helpDialog").dataset.open === "true") {
+          if (e.key === "Escape") document.getElementById("helpDialog").dataset.open = "false";
+          return;
+        }
+        if (e.key === "h") {
+          setView(state.view === "heatmap" ? "detail" : "heatmap");
+        } else if (e.key === "c") {
+          const select = document.getElementById("compareSelect");
+          const currentIdx = select.selectedIndex;
+          const nextIdx = (currentIdx + 1) % select.options.length;
+          select.selectedIndex = nextIdx;
+          setCompare(select.value);
+        } else if (e.key === "e") {
+          exportCSV();
+        } else if (e.key === "?") {
+          document.getElementById("helpDialog").dataset.open = "true";
+        } else if (e.key === "Escape") {
+          resetAll();
+        }
+      });
+
+      // ============================================================
+      // INIT
+      // ============================================================
+      decodeState();
+      if (state.view !== "detail") document.body.dataset.view = state.view;
+      document.body.dataset.compare = state.compareWith ? "true" : "false";
+      renderAll();
+
+      // Measure controls bar height and expose it so sticky table headers
+      // park directly beneath it (no double-scroll, no header collision).
+      function measureHeaderOffset() {
+        const bar = document.querySelector(".controls-bar");
+        if (!bar) return;
+        const h = bar.getBoundingClientRect().height;
+        document.documentElement.style.setProperty("--header-offset", `${Math.round(h)}px`);
+      }
+      measureHeaderOffset();
+      if (window.ResizeObserver) {
+        new ResizeObserver(measureHeaderOffset).observe(document.querySelector(".controls-bar"));
+      } else {
+        window.addEventListener("resize", measureHeaderOffset);
+      }
+
+      window.addEventListener("hashchange", () => {
+        // No-op (we own the hash; avoid loops)
+      });
+    </script>
+  </body>
+</html>
