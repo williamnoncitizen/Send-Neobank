@@ -14,5 +14,7 @@ Pure static HTML, CSS, and vanilla JavaScript. No build step. Hosted on GitHub P
 ## Disclaimer
 
 Yield, interest, APY, earn, and rewards references are informational only. Access may
-depend on third-party programs, variable rates, region, eligibility, and provider terms;
-capital may be at risk. Send does not custody or guarantee third-party yields.
+depend on variable rates, third-party providers, region, eligibility, and provider terms;
+capital may be at risk. SEND does not custody or guarantee third-party yields. Send is
+not a bank; banking-style capabilities may depend on licensed partners, jurisdiction,
+and approval.

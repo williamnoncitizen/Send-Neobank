@@ -951,9 +951,10 @@
       <!-- ===== Hero ===== -->
       <section class="hero">
         <span class="hero-eyebrow"><span class="dot"></span>Competitive matrix · Q2 2026</span>
-        <h1>Send, <em>compared to everyone.</em></h1>
+        <h1>Send, <em>compared to the market.</em></h1>
         <p class="hero-lede">
-          Every feature against every competitor. This is what the roadmap is built on.
+          A selected feature matrix across neobank and crypto-card competitors. This is
+          the working evidence behind the roadmap.
         </p>
       </section>
 
@@ -963,7 +964,7 @@
           <div class="story-eyebrow">Where Send wins</div>
           <div class="story-title">Identity + crypto rails</div>
           <p class="story-desc">Sendtags, passkeys, links, USDC, self-custody. The features
-          Send already does best, with no Phase 2 dependencies.</p>
+          where Send is strongest today, with no Phase 2 dependencies.</p>
         </button>
         <button class="story-card" type="button" data-story="gaps" aria-pressed="false">
           <div class="story-eyebrow">Where Send must catch up</div>
@@ -975,7 +976,8 @@
           <div class="story-eyebrow">Crypto vs mainstream</div>
           <div class="story-title">Two playbooks, one matrix</div>
           <p class="story-desc">Mainstream players own the account. Crypto-natives own
-          the wallet. Send is the only one trying to own both.</p>
+          the wallet. Send's wedge is combining social identity, self-custody, and
+          account-style money movement.</p>
         </button>
       </section>
 
@@ -994,7 +996,7 @@
         <div class="insight">
           <div class="insight-label">Send partial</div>
           <div class="insight-value" id="insightPartial">0<span class="total"> /<span data-total>0</span></span></div>
-          <p class="insight-copy">Features Send has partially — upgrade candidates</p>
+          <p class="insight-copy">Features Send has partially: upgrade candidates</p>
         </div>
         <div class="insight">
           <div class="insight-label">Phase 1 blockers visible</div>
@@ -1098,14 +1100,17 @@
             Phantom Cash (
             <a href="https://phantom.com/cash">homepage</a>,
             <a href="https://help.phantom.com/hc/en-us/articles/44799497237395-About-Phantom-Cash">help</a>),
-            Ether.fi Cash, Tuyo, Avici. All scores reflect live or announced features as of Q2 2026.
+            Ether.fi Cash, Tuyo, Avici. Scores are based on public pages reviewed for
+            this analysis; some cells reflect announced, limited-availability, or
+            region-specific features and should be rechecked before external use.
           </p>
         </details>
         <p class="disclaimer">
           Yield, interest, APY, earn, and rewards references are informational only.
-          Access may depend on third-party programs, variable rates, region, eligibility,
-          and provider terms; capital may be at risk. Send does not custody or guarantee
-          third-party yields.
+          Access may depend on variable rates, third-party providers, region, eligibility,
+          and provider terms; capital may be at risk. SEND does not custody or guarantee
+          third-party yields. Send is not a bank; banking-style capabilities may depend on
+          licensed partners, jurisdiction, and approval.
         </p>
       </section>
     </main>
@@ -1532,7 +1537,7 @@
           why: "Gives users a reason to keep balances in the app.",
           phase: "shipped",
           scores: {
-            send: ["yes", "USDC yield"],
+            send: ["yes", "Third-party USDC yield; variable, region-dependent"],
             cashapp: ["yes", "High-interest savings"],
             phantomcash: ["yes", "CASH interest"],
             etherfi: ["partial", "ether.fi earn ecosystem"],
@@ -1550,7 +1555,7 @@
           group: "Grow + Monetize",
           feature: "Investments",
           why: "Broadens daily banking into wealth building.",
-          phase: "phase2",
+          phase: "phase3",
           scores: {
             send: ["no", ""],
             cashapp: ["yes", "Stocks + ETFs"],
@@ -1592,7 +1597,7 @@
           why: "Turns usage into retention and incentives.",
           phase: "phase2",
           scores: {
-            send: ["yes", "Referral rewards"],
+            send: ["partial", "Referral rewards; purchase cashback not live"],
             cashapp: ["yes", "Offers"],
             phantomcash: ["no", "No cashback found"],
             etherfi: ["yes", "Cashback"],
@@ -1612,7 +1617,7 @@
           why: "Money apps need visible controls, not only backend security.",
           phase: "phase2",
           scores: {
-            send: ["partial", "Passkeys + custody"],
+            send: ["partial", "Passkeys + self-custody"],
             cashapp: ["yes", "Security lock + card lock"],
             phantomcash: ["yes", "PIN + card lock"],
             etherfi: ["yes", "Vault + spend limits"],
@@ -1671,15 +1676,15 @@
       // Editorial annotations between groups.
       const annotations = {
         "Identity + UX":
-          "<strong>Identity is Send's strongest stack.</strong> Send and Avici are the only two with passkeys; only Send, Cash App, Phantom, KAST, and Wise have real handles. This is where Send leads.",
+          "<strong>Identity is one of Send's strongest stacks.</strong> Send combines Send Tags, Send Links, passkeys, and self-custody in a way most competitors do not. This is where Send has a real wedge.",
         "Account + Funding":
-          "<strong>The chasm starts here.</strong> Every mainstream and most crypto-native competitors have a bank-style account. Send doesn't. Closing this gap is the single biggest Phase 1 unlock.",
+          "<strong>The chasm starts here.</strong> Most mainstream and many crypto-native competitors have bank-style account details. Send doesn't. Closing this gap is the biggest Phase 1 unlock.",
         "Money Movement":
-          "<strong>Send is best-in-class globally, blocked locally.</strong> USDC global transfers beat every fiat rail on speed and cost — but the cash-out loop back to a US bank is still partial.",
+          "<strong>Send is strong globally, blocked locally.</strong> USDC transfers can be faster and lower-cost in some cross-border contexts, but fiat rails still matter for cash-in, cash-out, compliance, and acceptance.",
         "Spend":
-          "<strong>Send's biggest hole.</strong> Send has zero spend coverage. Every other competitor in this matrix has at least a virtual card. This is the wall between social money and neobank.",
+          "<strong>Send's biggest hole.</strong> Send has no spend coverage today. Most competitors in this matrix have at least a virtual card. This is the wall between social money and neobank.",
         "Grow + Monetize":
-          "<strong>Yield is shipped, the rest is open.</strong> Send already has USDC yield. Tiered yield, investments, and richer cashback are the Phase 2 upgrades that move Send from 'has yield' to 'competitive with Cash App and Revolut.'",
+          "<strong>Yield access exists, but the program design matters.</strong> Send has access to third-party USDC yield, while tiered options, investments, and purchase rewards remain roadmap items that need eligibility, risk, and partner framing.",
         "Trust + Operations":
           "<strong>Trust is the silent Phase 2 gate.</strong> Most competitors lead with visible fraud alerts and security controls. Send has the security primitives but doesn't surface them as product features yet.",
       };
@@ -1786,17 +1791,17 @@
         const total = others.length;
 
         if (sendStatus === "yes") {
-          if (yesCount === 0) return { tone: "lead", text: `Send is the only one with this` };
-          if (yesCount <= 2) return { tone: "lead", text: `Send leads — only ${yesCount + 1} of ${total + 1} have this` };
+          if (yesCount === 0) return { tone: "lead", text: `Send appears uniquely strong here` };
+          if (yesCount <= 2) return { tone: "lead", text: `Send leads: ${yesCount + 1} of ${total + 1} have this` };
           return { tone: "neutral", text: `Send among ${yesCount + 1} of ${total + 1} that have this` };
         }
         if (sendStatus === "partial") {
-          if (yesCount >= total / 2) return { tone: "lag", text: `Send partial — ${yesCount} of ${total} are full yes` };
-          return { tone: "lag", text: `Send partial — ${yesCount} of ${total} have it fully` };
+          if (yesCount >= total / 2) return { tone: "lag", text: `Send partial: ${yesCount} of ${total} are full yes` };
+          return { tone: "lag", text: `Send partial: ${yesCount} of ${total} have it fully` };
         }
-        if (yesCount >= 8) return { tone: "behind", text: `Send missing — ${yesCount} of ${total} have this` };
-        if (yesCount >= 4) return { tone: "behind", text: `Send missing — ${yesCount} of ${total} have this` };
-        if (yesCount > 0) return { tone: "lag", text: `Send missing — ${yesCount} of ${total} have this` };
+        if (yesCount >= 8) return { tone: "behind", text: `Send missing: ${yesCount} of ${total} have this` };
+        if (yesCount >= 4) return { tone: "behind", text: `Send missing: ${yesCount} of ${total} have this` };
+        if (yesCount > 0) return { tone: "lag", text: `Send missing: ${yesCount} of ${total} have this` };
         return { tone: "neutral", text: `Nobody has this yet` };
       }
 
