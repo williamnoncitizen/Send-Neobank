@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <meta name="description" content="Send competitive feature matrix across 12 neobank and crypto-card competitors." />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Send · Competitive Matrix V2</title>
+    <title>Send · Comp Analysis · v3.1</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -37,7 +38,10 @@
 
       body {
         margin: 0;
-        background: var(--bg);
+        background:
+          radial-gradient(circle at 18% -10%, rgba(64, 251, 80, 0.12), transparent 40rem),
+          radial-gradient(circle at 90% -5%, rgba(118, 237, 136, 0.07), transparent 36rem),
+          var(--bg);
         color: var(--text);
         font-family: "DM Sans", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         line-height: 1.45;
@@ -49,6 +53,21 @@
       button { font: inherit; cursor: pointer; }
       a { color: inherit; }
 
+
+      :focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px #40fb50; }
+      .version-switch { display: inline-flex; align-items: center; gap: 4px; margin-left: 8px; padding-left: 12px; border-left: 1px solid var(--line); }
+      .version-switch a { padding: 6px 10px; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+      .filter-banner { display: none; align-items: center; flex-wrap: wrap; gap: 10px; margin: 12px 16px 0; padding: 10px 14px; border: 1px solid #168328; border-radius: 4px; background: rgba(64,251,80,0.06); font-size: 13px; color: var(--muted); }
+      .filter-banner.is-active { display: flex; }
+      .filter-banner button { margin-left: auto; padding: 6px 10px; border: 1px solid var(--line-strong); border-radius: 4px; background: var(--surface); color: var(--text); font-size: 12px; font-weight: 700; cursor: pointer; }
+      .insights-strip.is-loading { visibility: hidden; min-height: 88px; }
+      .insights-strip.is-ready { visibility: visible; }
+      .chip[aria-pressed="false"] { opacity: 1; color: var(--faint); background: transparent; }
+      .filters-panel { display: none; border-bottom: 1px solid var(--line); background: rgba(0,0,0,0.15); }
+      .filters-panel.is-open { display: block; }
+      .cell-popover { position: fixed; z-index: 200; max-width: 300px; padding: 12px 14px; border: 1px solid var(--line-strong); border-radius: 6px; background: var(--surface-3); box-shadow: 0 12px 40px rgba(0,0,0,0.5); font-size: 13px; display: none; }
+      .cell-popover.is-open { display: block; }
+      .cell-popover .pop-title { font-weight: 800; margin-bottom: 6px; color: var(--text); }
       .page {
         width: min(var(--max), calc(100% - 36px));
         margin: 0 auto;
@@ -258,16 +277,188 @@
         border: 1px solid var(--line-strong);
         border-radius: 6px;
         background: var(--bg-2);
-        overflow: hidden;
       }
+
+      /* Filters sit above the matrix scroll region.
+         Not sticky — the toolbar is multi-row and would eat too much viewport.
+         The 78vh table scroll container keeps the toolbar in reach. */
+      .matrix-sticky-toolbar {
+        background: var(--bg-2);
+        border-bottom: 1px solid var(--line);
+      }
+
+      /* Single scroll container for the table view.
+         One overflow:auto means sticky thead + sticky first column actually work,
+         and the horizontal scrollbar is exactly where you'd expect it. */
+      .matrix-body-scroller {
+        border-top: 1px solid var(--line);
+      }
+
+      body[data-view="table"] .matrix-body-scroller {
+        max-height: min(78vh, 960px);
+        overflow: auto;
+        overscroll-behavior: contain;
+      }
+
+      /* Show one view at a time */
+      .tile-grid { display: none; }
+      #tableWrap { display: none; }
+      body[data-view="tiles"] .tile-grid { display: grid; }
+      body[data-view="table"] #tableWrap { display: block; }
+
+      /* Tile-only controls (e.g. Compact density) hide outside tile view */
+      body:not([data-view="tiles"]) [data-tiles-only] { display: none; }
+
+      /* Hide mobile-only stacked cards in any non-mobile width (tiles supersede them) */
+      .mobile-cards { display: none; }
+
+      /* ===== Tile grid view ===== */
+      .tile-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        padding: 18px;
+      }
+
+      @media (max-width: 1280px) {
+        .tile-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+
+      @media (max-width: 720px) {
+        .tile-grid { grid-template-columns: 1fr; padding: 14px; gap: 12px; }
+      }
+
+      .tile-group-band {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 6px;
+        padding: 10px 6px 0;
+        border-top: 1px solid var(--line);
+        color: var(--send);
+        font-size: 11.5px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .tile-group-band:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+
+      .tile-group-band .count {
+        color: var(--faint);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+      }
+
+      .tile {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 18px 18px 16px;
+        border: 1px solid var(--line-strong);
+        border-radius: 8px;
+        background: var(--surface);
+        transition: border-color 0.15s ease, transform 0.15s ease, opacity 0.2s ease;
+      }
+
+      .tile:hover { border-color: var(--send-deep); }
+
+      .tile[data-send-lead="lead"] { border-color: rgba(64, 251, 80, 0.45); background: linear-gradient(180deg, rgba(64, 251, 80, 0.05), transparent 60%), var(--surface); }
+      .tile[data-send-lead="partial"] { border-color: rgba(247, 201, 72, 0.4); }
+      .tile[data-send-lead="missing"] { border-color: rgba(255, 120, 120, 0.35); }
+      .tile[data-send-lead="missing"][data-phase="phase1"] { border-color: rgba(255, 120, 120, 0.7); background: linear-gradient(180deg, rgba(255, 120, 120, 0.05), transparent 60%), var(--surface); }
+
+      .tile-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .tile-head .phase-tag { font-size: 10px; padding: 2px 6px; }
+
+      .tile-send-status {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border: 1px solid var(--line-strong);
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .tile-send-status .dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: currentColor;
+      }
+      .tile-send-status.lead { color: var(--send); border-color: rgba(64, 251, 80, 0.4); background: rgba(64, 251, 80, 0.08); }
+      .tile-send-status.partial { color: var(--partial); border-color: rgba(247, 201, 72, 0.35); background: rgba(247, 201, 72, 0.08); }
+      .tile-send-status.missing { color: #ff8b8b; border-color: rgba(255, 120, 120, 0.35); background: rgba(255, 120, 120, 0.08); }
+
+      .tile-title {
+        font-size: 16.5px;
+        font-weight: 700;
+        line-height: 1.25;
+        letter-spacing: -0.01em;
+        color: var(--text);
+      }
+
+      .tile-why {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .tile-rows {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.05fr);
+        column-gap: 10px;
+        row-gap: 8px;
+        padding-top: 10px;
+        border-top: 1px solid var(--line);
+        font-size: 12.5px;
+      }
+
+      .tile-row-company { color: var(--muted); align-self: center; }
+      .tile-row-company.send { color: var(--send); font-weight: 700; }
+      .tile-row-status {
+        align-self: center;
+        display: inline-grid;
+        place-items: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 4px;
+        font-weight: 800;
+        font-size: 12px;
+      }
+      .tile-row-status.yes { background: rgba(64, 251, 80, 0.14); color: var(--yes); }
+      .tile-row-status.partial { background: rgba(247, 201, 72, 0.14); color: var(--partial); }
+      .tile-row-status.no { background: rgba(74, 76, 82, 0.32); color: var(--faint); }
+      .tile-row-note { color: var(--faint); font-size: 11.5px; line-height: 1.35; align-self: center; }
+
+      body.compact-tiles .tile-row-note { display: none; }
+      body.compact-tiles .tile-rows { grid-template-columns: minmax(0, 1fr) auto; }
+
+      .tile-empty {
+        grid-column: 1 / -1;
+        padding: 60px 30px;
+        text-align: center;
+        border: 1px dashed var(--line-strong);
+        border-radius: 8px;
+        color: var(--muted);
+      }
+      .tile-empty h3 { font-size: 18px; color: var(--text); margin-bottom: 6px; }
 
       /* ===== Controls bar ===== */
       .controls-bar {
-        position: sticky;
-        top: 0;
-        z-index: 6;
-        background: rgba(16, 16, 18, 0.96);
-        backdrop-filter: blur(14px);
         border-bottom: 1px solid var(--line);
       }
 
@@ -469,30 +660,34 @@
       .legend-badge.partial { background: rgba(247, 201, 72, 0.14); color: var(--partial); }
       .legend-badge.no { background: rgba(74, 76, 82, 0.4); color: var(--faint); }
 
-      /* ===== Table ===== */
-      .table-wrap {
-        overflow-x: auto;
-        overflow-y: clip;
+      #tableWrap {
+        width: 100%;
       }
 
-      table {
-        width: 100%;
-        min-width: 1180px;
+      #matrixTable {
+        width: max-content;
+        min-width: 100%;
+        table-layout: fixed;
         border-collapse: separate;
         border-spacing: 0;
       }
 
-      th, td {
+      #matrixTable th,
+      #matrixTable td {
         border-bottom: 1px solid var(--line);
         border-right: 1px solid var(--line);
         padding: 14px;
         vertical-align: top;
       }
 
-      th {
+      #matrixTable.is-header-pinned thead th {
+        box-shadow: 0 2px 0 var(--line), 0 10px 22px rgba(0, 0, 0, 0.45);
+      }
+
+      #matrixTable thead th {
         position: sticky;
-        top: var(--header-offset, 184px);
-        z-index: 3;
+        top: 0;
+        z-index: 12;
         background: var(--surface-3);
         color: var(--faint);
         font-size: 11px;
@@ -501,9 +696,11 @@
         text-transform: uppercase;
         font-weight: 800;
         padding: 12px 14px 14px;
+        box-shadow: 0 2px 0 var(--line), 0 6px 16px rgba(0, 0, 0, 0.35);
       }
 
-      th:first-child, td:first-child {
+      #matrixTable thead th:first-child,
+      #matrixTable td:first-child {
         position: sticky;
         left: 0;
         z-index: 2;
@@ -512,26 +709,38 @@
         background: var(--surface);
       }
 
-      th:first-child { z-index: 5; background: var(--surface-3); }
+      #matrixTable thead th:first-child {
+        z-index: 14;
+        background: var(--surface-3);
+      }
+
+      #matrixTable td:first-child {
+        z-index: 1;
+      }
 
       th:last-child, td:last-child { border-right: 0; }
 
       tr:last-child td { border-bottom: 0; }
 
       /* Send column highlight */
-      th[data-company="send"],
+      #matrixTable th[data-company="send"],
       td[data-company="send"] {
         background: linear-gradient(180deg, rgba(64, 251, 80, 0.07), rgba(64, 251, 80, 0.04));
       }
 
-      th[data-company="send"] {
+      #matrixTable th[data-company="send"] {
         color: var(--send);
         background: linear-gradient(180deg, rgba(64, 251, 80, 0.12), rgba(64, 251, 80, 0.06)), var(--surface-3);
       }
 
       .company-head {
+        width: 132px;
         min-width: 132px;
         text-align: left;
+      }
+
+      #matrixTable td[data-company] {
+        width: 132px;
       }
 
       .company-head .name {
@@ -559,7 +768,6 @@
         transition: width 0.3s ease;
       }
 
-      th[data-company="send"] .coverage-fill { background: var(--send); }
 
       .coverage-pct {
         margin-top: 5px;
@@ -569,7 +777,7 @@
         letter-spacing: 0.04em;
       }
 
-      th[data-company="send"] .coverage-pct { color: var(--send-soft); }
+      #matrixTable th[data-company="send"] .coverage-pct { color: var(--send-soft); }
 
       /* Group row */
       .group-row td {
@@ -751,22 +959,8 @@
         line-height: 1.35;
       }
 
-      /* Heatmap view: compact, suppress secondary text */
-      body[data-view="heatmap"] .feature-why { display: none; }
-      body[data-view="heatmap"] .send-rank { display: none; }
-      body[data-view="heatmap"] .note { display: none; }
-      body[data-view="heatmap"] .status { width: 28px; height: 28px; font-size: 13px; }
-      body[data-view="heatmap"] td, body[data-view="heatmap"] th { padding: 8px 10px; }
-      body[data-view="heatmap"] th:first-child, body[data-view="heatmap"] td:first-child {
-        min-width: 260px;
-        max-width: 260px;
-      }
-      body[data-view="heatmap"] .feature-meta { margin-bottom: 0; }
-      body[data-view="heatmap"] .feature-name { font-size: 12.5px; }
-      body[data-view="heatmap"] .coverage-pct { display: none; }
-
-      /* Mobile cards (hidden by default) */
-      .mobile-cards { display: none; padding: 16px; gap: 12px; flex-direction: column; }
+      /* Mobile stacked cards — superseded by tiles, kept for safety */
+      .mobile-cards { padding: 16px; gap: 12px; flex-direction: column; }
 
       .mobile-card {
         border: 1px solid var(--line-strong);
@@ -842,80 +1036,6 @@
         padding: 0 4px;
       }
 
-      .keyboard-hint {
-        font-size: 11.5px;
-        color: var(--faint);
-        padding: 0 4px;
-      }
-
-      .keyboard-hint kbd {
-        display: inline-block;
-        padding: 1px 5px;
-        border: 1px solid var(--line-strong);
-        border-radius: 3px;
-        background: var(--bg-2);
-        color: var(--muted);
-        font-family: inherit;
-        font-size: 10.5px;
-        font-weight: 700;
-        margin: 0 2px;
-      }
-
-      /* Help dialog */
-      .help-dialog {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.75);
-        backdrop-filter: blur(8px);
-        z-index: 100;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 30px;
-      }
-
-      .help-dialog[data-open="true"] { display: flex; }
-
-      .help-box {
-        max-width: 480px;
-        width: 100%;
-        background: var(--surface);
-        border: 1px solid var(--line-strong);
-        border-radius: 6px;
-        padding: 26px;
-      }
-
-      .help-box h3 {
-        font-size: 18px;
-        font-weight: 700;
-        color: var(--text);
-        letter-spacing: -0.02em;
-        margin-bottom: 16px;
-      }
-
-      .help-box ul { display: grid; gap: 10px; }
-      .help-box li {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 13px;
-        color: var(--muted);
-      }
-      .help-box li span:last-child {
-        color: var(--text);
-      }
-
-      .help-close {
-        margin-top: 18px;
-        padding: 8px 14px;
-        border: 1px solid var(--line-strong);
-        border-radius: 4px;
-        background: var(--bg-2);
-        color: var(--muted);
-        font-size: 12.5px;
-        font-weight: 700;
-      }
-
       /* ===== Responsive ===== */
       @media (max-width: 1100px) {
         .story-mode { grid-template-columns: 1fr; }
@@ -928,14 +1048,16 @@
         .insights-strip { grid-template-columns: 1fr; padding: 16px; }
         .insight { border-left: none; border-top: 1px solid var(--line); padding: 14px 0 0; }
         .insight:first-child { border-top: none; padding-top: 0; }
-        .table-wrap { display: none; }
-        .mobile-cards { display: flex; }
+        /* On mobile, force tile view; hide the table completely
+           (JS also flips state.view → "tiles" so the toggle buttons stay honest) */
+        body[data-view="table"] #tableWrap { display: none; }
+        body[data-view="table"] .tile-grid { display: grid; }
         .controls-row { padding: 10px 12px; }
         .nav { font-size: 12px; }
       }
     </style>
   </head>
-  <body data-view="detail">
+  <body data-view="tiles">
     <main class="page">
       <!-- ===== Topbar ===== -->
       <div class="topbar">
@@ -950,39 +1072,39 @@
 
       <!-- ===== Hero ===== -->
       <section class="hero">
-        <span class="hero-eyebrow"><span class="dot"></span>Competitive matrix · Q2 2026</span>
-        <h1>Send, <em>compared to the market.</em></h1>
+        <h1>Competitive landscape: <em>neobanks and crypto cards.</em></h1>
         <p class="hero-lede">
-          A selected feature matrix across neobank and crypto-card competitors. This is
-          the working evidence behind the roadmap.
+          A feature-level review of how Send compares against eleven apps across
+          identity, account, payment, spend, and trust. Q2 2026.
         </p>
       </section>
 
       <!-- ===== Story mode strip ===== -->
       <section class="story-mode" aria-label="Story mode presets">
         <button class="story-card" type="button" data-story="leads" aria-pressed="false">
-          <div class="story-eyebrow">Where Send wins</div>
-          <div class="story-title">Identity + crypto rails</div>
-          <p class="story-desc">Sendtags, passkeys, links, USDC, self-custody. The features
-          where Send is strongest today, with no Phase 2 dependencies.</p>
+          <div class="story-eyebrow">Where Send already leads</div>
+          <div class="story-title">Identity and on-chain rails</div>
+          <p class="story-desc">Sendtags, passkey login, payment links, native USDC,
+          and self-custody. Shipped today, and most competitors don't match them.</p>
         </button>
         <button class="story-card" type="button" data-story="gaps" aria-pressed="false">
-          <div class="story-eyebrow">Where Send must catch up</div>
-          <div class="story-title">Account loop + spend</div>
-          <p class="story-desc">Cards, mobile wallet pay, ACH cash-out, multi-currency.
-          The Phase 1 + Phase 2 gates that block the neobank claim.</p>
+          <div class="story-eyebrow">What Send doesn't ship yet</div>
+          <div class="story-title">Banking-grade money movement</div>
+          <p class="story-desc">Cards, mobile wallet pay, ACH cash-out, multi-currency
+          holding. Table-stakes for a primary account — and what has to land before
+          "neobank" is a defensible word.</p>
         </button>
         <button class="story-card" type="button" data-story="vs" aria-pressed="false">
-          <div class="story-eyebrow">Crypto vs mainstream</div>
-          <div class="story-title">Two playbooks, one matrix</div>
-          <p class="story-desc">Mainstream players own the account. Crypto-natives own
-          the wallet. Send's wedge is combining social identity, self-custody, and
-          account-style money movement.</p>
+          <div class="story-eyebrow">Two competitive sets</div>
+          <div class="story-title">Fiat-native vs. crypto-native neobanks</div>
+          <p class="story-desc">Fiat-native players (Revolut, Wise, Cash App, Nubank)
+          lead on the account layer. Crypto-native ones (KAST, Phantom Cash, Ether.fi)
+          lead on self-custody and on-chain payments. Send has to win on both fronts.</p>
         </button>
       </section>
 
       <!-- ===== Insights strip ===== -->
-      <section class="insights-strip" aria-label="Live insights">
+      <section class="insights-strip is-loading" aria-label="Live insights" id="insightsStrip">
         <div class="insight">
           <div class="insight-label">Send leads</div>
           <div class="insight-value" id="insightLead">0<span class="total"> /<span data-total>0</span></span></div>
@@ -1006,7 +1128,12 @@
       </section>
 
       <!-- ===== Matrix panel ===== -->
-      <section class="matrix-panel" aria-label="Feature matrix">
+      <div class="filter-banner" id="filterBanner" role="status">
+          <span id="filterBannerText"><strong>Filtered view</strong></span>
+          <button type="button" id="clearFiltersBtn">Clear filters</button>
+        </div>
+        <section class="matrix-panel" aria-label="Feature matrix">
+        <div class="matrix-sticky-toolbar" id="matrixStickyToolbar">
         <div class="controls-bar">
           <!-- Row 1: group chips -->
           <div class="controls-row">
@@ -1018,8 +1145,8 @@
           <div class="controls-row">
             <span class="label">View</span>
             <div class="view-toggle" role="group" aria-label="View mode">
-              <button type="button" data-view-mode="detail" aria-pressed="true">Detail</button>
-              <button type="button" data-view-mode="heatmap" aria-pressed="false">Heatmap</button>
+              <button type="button" data-view-mode="tiles" aria-pressed="true">Tiles</button>
+              <button type="button" data-view-mode="table" aria-pressed="false">Table</button>
             </div>
             <span class="label" style="margin-left:8px">Story</span>
             <div class="phase-row" id="phaseRow">
@@ -1035,8 +1162,8 @@
                 <option value="">All competitors</option>
               </select>
             </div>
-            <button class="utility-btn" type="button" id="exportBtn" title="Export current view as CSV">Export CSV</button>
-            <button class="utility-btn" type="button" id="helpBtn" title="Keyboard shortcuts">? Shortcuts</button>
+            <button class="utility-btn" type="button" id="filtersPanelBtn" aria-expanded="false">Filters</button>
+            <button class="utility-btn" type="button" id="densityToggle" aria-pressed="false" title="Compact tile mode hides per-cell notes" data-tiles-only>Compact</button>
           </div>
 
           <!-- Row 3: company toggles + presets -->
@@ -1045,8 +1172,7 @@
             <button class="chip" type="button" data-preset="all" aria-pressed="true">All</button>
             <button class="chip" type="button" data-preset="crypto" aria-pressed="false">Crypto</button>
             <button class="chip" type="button" data-preset="mainstream" aria-pressed="false">Mainstream</button>
-            <span class="label" style="margin-left:14px">Toggle</span>
-            <div class="group-chips" id="companyChips"></div>
+            <div class="group-chips" id="companyChips" style="margin-left:14px"></div>
           </div>
         </div>
 
@@ -1055,25 +1181,29 @@
           <span class="legend-item"><span class="legend-badge yes">✓</span>Clearly supported</span>
           <span class="legend-item"><span class="legend-badge partial">◐</span>Present, limited, or adjacent</span>
           <span class="legend-item"><span class="legend-badge no">—</span>Not found in current research</span>
-          <span class="legend-item" style="color:var(--faint)">Hover any cell to see source notes</span>
+          <span class="legend-item" style="color:var(--faint)">Click any cell for source notes</span>
+        </div>
         </div>
 
-        <div class="table-wrap" id="tableWrap">
-          <table id="matrixTable">
-            <thead></thead>
-            <tbody></tbody>
-          </table>
+        <div class="matrix-body-scroller" id="matrixBodyScroller">
+          <!-- Tile view (default) -->
+          <div class="tile-grid" id="tileGrid" aria-label="Feature tiles"></div>
+
+          <!-- Table view (no inner scroller: matrix-body-scroller owns scroll) -->
+          <div id="tableWrap">
+            <table id="matrixTable">
+              <thead></thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
 
-        <!-- Mobile stacked cards -->
-        <div class="mobile-cards" id="mobileCards"></div>
+        <!-- Legacy mobile stacked cards (no longer rendered; tiles cover this) -->
+        <div class="mobile-cards" id="mobileCards" hidden></div>
       </section>
 
       <!-- ===== Footer info ===== -->
       <section class="footer-info">
-        <p class="keyboard-hint">
-          Shortcuts: <kbd>h</kbd> heatmap · <kbd>c</kbd> compare · <kbd>e</kbd> export · <kbd>?</kbd> help · <kbd>Esc</kbd> reset
-        </p>
         <details>
           <summary>Sources and verification</summary>
           <p>
@@ -1113,22 +1243,7 @@
           licensed partners, jurisdiction, and approval.
         </p>
       </section>
-    </main>
-
-    <!-- Help dialog -->
-    <div class="help-dialog" id="helpDialog" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
-      <div class="help-box">
-        <h3 id="helpTitle">Keyboard shortcuts</h3>
-        <ul>
-          <li><span>Toggle heatmap view</span><span><kbd>h</kbd></span></li>
-          <li><span>Compare mode (cycle competitor)</span><span><kbd>c</kbd></span></li>
-          <li><span>Export current view (CSV)</span><span><kbd>e</kbd></span></li>
-          <li><span>Reset all filters</span><span><kbd>Esc</kbd></span></li>
-          <li><span>Show this help</span><span><kbd>?</kbd></span></li>
-        </ul>
-        <button class="help-close" type="button" id="helpClose">Close</button>
-      </div>
-    </div>
+    <div class="cell-popover" id="cellPopover" role="dialog" aria-hidden="true"></div></main>
 
     <script>
       // ============================================================
@@ -1699,10 +1814,11 @@
         groupsCollapsed: new Set(),
         groupsActive: new Set(groups),
         phaseFilter: null,
-        view: "detail",
+        view: "tiles",
         compareWith: "",
         story: null,
         activePreset: "all",
+        compactTiles: false,
       };
 
       // ============================================================
@@ -1717,9 +1833,10 @@
           params.set("g", [...state.groupsActive].map((g) => g.replace(/\s+/g, "_")).join(","));
         }
         if (state.phaseFilter) params.set("p", state.phaseFilter);
-        if (state.view !== "detail") params.set("v", state.view);
+        if (state.view !== "tiles") params.set("v", state.view);
         if (state.compareWith) params.set("vs", state.compareWith);
         if (state.story) params.set("s", state.story);
+        if (state.compactTiles) params.set("ct", "1");
         const hash = params.toString();
         if (hash) window.location.hash = hash;
         else history.replaceState(null, "", window.location.pathname);
@@ -1739,9 +1856,14 @@
           if (state.groupsActive.size === 0) state.groupsActive = new Set(groups);
         }
         if (params.has("p")) state.phaseFilter = params.get("p");
-        if (params.has("v")) state.view = params.get("v");
+        if (params.has("v")) {
+          const v = params.get("v");
+          // Legacy: "detail" used to mean the table view
+          state.view = v === "detail" ? "table" : v;
+        }
         if (params.has("vs")) state.compareWith = params.get("vs");
         if (params.has("s")) state.story = params.get("s");
+        if (params.has("ct")) state.compactTiles = true;
       }
 
       // ============================================================
@@ -1899,7 +2021,7 @@
           .map((c) => {
             const pct = Math.round(totals[c.id] * 100);
             return `
-              <th class="company-head" data-company="${c.id}">
+              <th class="company-head" scope="col" data-company="${c.id}">
                 <div class="name">${c.name}</div>
                 <div class="coverage-bar"><div class="coverage-fill" style="width:${pct}%"></div></div>
                 <div class="coverage-pct">${pct}% coverage</div>
@@ -1908,7 +2030,7 @@
           })
           .join("");
 
-        return `<tr><th>Feature</th>${cells}</tr>`;
+        return `<tr class="company-header-row"><th scope="col">Feature</th>${cells}</tr>`;
       }
 
       // ============================================================
@@ -1919,7 +2041,6 @@
         const filteredRows = getFilteredRows();
         const tbody = document.querySelector("#matrixTable tbody");
         const thead = document.querySelector("#matrixTable thead");
-
         thead.innerHTML = buildHead(visibleCompanies, filteredRows);
 
         if (filteredRows.length === 0) {
@@ -1931,8 +2052,9 @@
               </div>
             </td></tr>
           `;
-          renderMobileCards(visibleCompanies, filteredRows);
+          renderTiles(visibleCompanies, filteredRows);
           updateInsights(filteredRows, visibleCompanies);
+          window.__updateHeaderPinnedState?.();
           return;
         }
 
@@ -2006,12 +2128,107 @@
         });
 
         tbody.innerHTML = html;
-        renderMobileCards(visibleCompanies, filteredRows);
+        renderTiles(visibleCompanies, filteredRows);
         updateInsights(filteredRows, visibleCompanies);
+        window.__updateHeaderPinnedState?.();
       }
 
       // ============================================================
-      // RENDER: MOBILE CARDS
+      // RENDER: TILE GRID
+      // ============================================================
+      function sendTileTone(row) {
+        const sendData = row.scores.send;
+        if (!sendData) return "neutral";
+        const s = sendData[0];
+        if (s === "yes" && isSendLeading(row)) return "lead";
+        if (s === "yes") return "neutral";
+        if (s === "partial") return "partial";
+        return "missing";
+      }
+
+      function sendStatusBadge(row) {
+        const sendData = row.scores.send;
+        if (!sendData) return { cls: "missing", label: "Not yet" };
+        const s = sendData[0];
+        if (s === "yes" && isSendLeading(row)) return { cls: "lead", label: "Send leads" };
+        if (s === "yes") return { cls: "lead", label: "Send shipped" };
+        if (s === "partial") return { cls: "partial", label: "Send partial" };
+        return { cls: "missing", label: "Send missing" };
+      }
+
+      function renderTiles(visibleCompanies, filteredRows) {
+        const wrap = document.getElementById("tileGrid");
+        if (!wrap) return;
+        if (filteredRows.length === 0) {
+          wrap.innerHTML = `
+            <div class="tile-empty">
+              <h3>No features match these filters</h3>
+              <p>Try removing the phase filter, clearing compare mode, or toggling groups back on.</p>
+            </div>`;
+          return;
+        }
+
+        // Group rows by group name in canonical order
+        const rowsByGroup = {};
+        filteredRows.forEach((row) => {
+          if (!rowsByGroup[row.group]) rowsByGroup[row.group] = [];
+          rowsByGroup[row.group].push(row);
+        });
+
+        let html = "";
+        groups.forEach((groupName) => {
+          const rows = rowsByGroup[groupName];
+          if (!rows || rows.length === 0) return;
+          html += `
+            <div class="tile-group-band" data-group="${groupName}">
+              <span>${groupName}</span>
+              <span class="count">${rows.length} feature${rows.length === 1 ? "" : "s"}</span>
+            </div>`;
+
+          rows.forEach((row) => {
+            const tone = sendTileTone(row);
+            const badge = sendStatusBadge(row);
+            const phaseClass = row.phase === "shipped" ? "shipped" : row.phase;
+            const phaseLabel =
+              row.phase === "shipped" ? "Shipped" :
+              row.phase === "phase1" ? "Phase 1" :
+              row.phase === "phase2" ? "Phase 2" : "Phase 3";
+
+            // Send pinned first, then other visible companies in order
+            const ordered = [
+              ...visibleCompanies.filter((c) => c.id === "send"),
+              ...visibleCompanies.filter((c) => c.id !== "send"),
+            ];
+
+            const rowsHtml = ordered
+              .map((c) => {
+                const [status, note] = row.scores[c.id] || ["no", ""];
+                return `
+                  <span class="tile-row-company ${c.id === "send" ? "send" : ""}">${c.name}</span>
+                  <span class="tile-row-status ${status}" title="${note ? note.replace(/"/g, "&quot;") : ""}">${statusGlyph(status)}</span>
+                  <span class="tile-row-note">${note || ""}</span>
+                `;
+              })
+              .join("");
+
+            html += `
+              <article class="tile" data-send-lead="${tone}" data-phase="${row.phase}" data-group="${row.group}" data-feature="${row.feature.replace(/"/g, "&quot;")}">
+                <div class="tile-head">
+                  <span class="phase-tag ${phaseClass}">${phaseLabel}</span>
+                  <span class="tile-send-status ${badge.cls}"><span class="dot"></span>${badge.label}</span>
+                </div>
+                <div class="tile-title">${row.feature}</div>
+                <div class="tile-why">${row.why}</div>
+                <div class="tile-rows">${rowsHtml}</div>
+              </article>`;
+          });
+        });
+
+        wrap.innerHTML = html;
+      }
+
+      // ============================================================
+      // RENDER: MOBILE CARDS (legacy — kept for safety, no longer wired)
       // ============================================================
       function renderMobileCards(visibleCompanies, filteredRows) {
         const wrap = document.getElementById("mobileCards");
@@ -2075,6 +2292,9 @@
         setInsight("insightMissing", missing, total);
         setInsight("insightPartial", partial, total);
         setInsight("insightP1", p1blockers, total);
+        document.getElementById("insightsStrip")?.classList.remove("is-loading");
+        document.getElementById("insightsStrip")?.classList.add("is-ready");
+        updateFilterBanner(filteredRows);
       }
 
       function setInsight(id, value, total) {
@@ -2138,16 +2358,40 @@
       }
 
       function setView(view) {
+        // Force tiles on narrow viewports — the table isn't viable below 720px.
+        if (view !== "tiles" && window.matchMedia("(max-width: 720px)").matches) {
+          view = "tiles";
+        }
         state.view = view;
         document.body.dataset.view = view;
         renderPresets();
         encodeState();
+        window.__updateHeaderPinnedState?.();
       }
 
+      // Re-sync when the user crosses the 720px breakpoint
+      window.matchMedia("(max-width: 720px)").addEventListener?.("change", (ev) => {
+        if (ev.matches && state.view !== "tiles") setView("tiles");
+      });
+
       function setCompare(id) {
+        const wasComparing = !!state.compareWith;
+        const isNarrow = window.matchMedia("(max-width: 720px)").matches;
         state.compareWith = id;
         if (id) state.activePreset = "custom";
         document.body.dataset.compare = id ? "true" : "false";
+
+        // Compare is a column-scan task — table view reads best with 2 columns.
+        // Auto-switch on entering compare, snap back to tiles on clearing.
+        // Skip on mobile, where the table is hidden anyway.
+        if (!isNarrow) {
+          if (id && state.view !== "table") {
+            setView("table");
+          } else if (!id && wasComparing && state.view === "table") {
+            setView("tiles");
+          }
+        }
+
         renderPresets();
         renderTable();
         encodeState();
@@ -2185,45 +2429,18 @@
         state.groupsActive = new Set(groups);
         state.groupsCollapsed.clear();
         state.phaseFilter = null;
-        state.view = "detail";
+        state.view = "tiles";
         state.compareWith = "";
         state.story = null;
         state.activePreset = "all";
-        document.body.dataset.view = "detail";
+        state.compactTiles = false;
+        document.body.dataset.view = "tiles";
         document.body.dataset.compare = "false";
+        document.body.classList.remove("compact-tiles");
+        const dt = document.getElementById("densityToggle");
+        if (dt) dt.setAttribute("aria-pressed", "false");
         renderAll();
         encodeState();
-      }
-
-      // ============================================================
-      // CSV EXPORT
-      // ============================================================
-      function exportCSV() {
-        const visibleCompanies = getVisibleCompanies();
-        const filteredRows = getFilteredRows();
-        const header = ["Group", "Phase", "Feature", "Why", ...visibleCompanies.map((c) => c.name), ...visibleCompanies.map((c) => `${c.name} note`)];
-        const lines = [header.join(",")];
-        filteredRows.forEach((row) => {
-          const line = [
-            `"${row.group}"`,
-            `"${row.phase}"`,
-            `"${row.feature.replace(/"/g, '""')}"`,
-            `"${row.why.replace(/"/g, '""')}"`,
-            ...visibleCompanies.map((c) => `"${(row.scores[c.id] && row.scores[c.id][0]) || "no"}"`),
-            ...visibleCompanies.map((c) => `"${((row.scores[c.id] && row.scores[c.id][1]) || "").replace(/"/g, '""')}"`),
-          ];
-          lines.push(line.join(","));
-        });
-        const csv = lines.join("\n");
-        const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `send-matrix-${new Date().toISOString().slice(0, 10)}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
       }
 
       // ============================================================
@@ -2272,22 +2489,6 @@
         setCompare(e.target.value);
       });
 
-      document.getElementById("exportBtn").addEventListener("click", exportCSV);
-
-      document.getElementById("helpBtn").addEventListener("click", () => {
-        document.getElementById("helpDialog").dataset.open = "true";
-      });
-
-      document.getElementById("helpClose").addEventListener("click", () => {
-        document.getElementById("helpDialog").dataset.open = "false";
-      });
-
-      document.getElementById("helpDialog").addEventListener("click", (e) => {
-        if (e.target.id === "helpDialog") {
-          document.getElementById("helpDialog").dataset.open = "false";
-        }
-      });
-
       // Group row toggle (collapsible)
       document.querySelector("#matrixTable tbody").addEventListener("click", (e) => {
         const groupRow = e.target.closest(".group-row");
@@ -2301,30 +2502,80 @@
         renderTable();
       });
 
-      // Keyboard shortcuts
       document.addEventListener("keydown", (e) => {
         if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT" || e.target.tagName === "TEXTAREA") {
           if (e.key === "Escape") e.target.blur();
           return;
         }
-        if (document.getElementById("helpDialog").dataset.open === "true") {
-          if (e.key === "Escape") document.getElementById("helpDialog").dataset.open = "false";
-          return;
-        }
-        if (e.key === "h") {
-          setView(state.view === "heatmap" ? "detail" : "heatmap");
+        if (e.key === "t") {
+          setView(state.view === "table" ? "tiles" : "table");
         } else if (e.key === "c") {
           const select = document.getElementById("compareSelect");
           const currentIdx = select.selectedIndex;
           const nextIdx = (currentIdx + 1) % select.options.length;
           select.selectedIndex = nextIdx;
           setCompare(select.value);
-        } else if (e.key === "e") {
-          exportCSV();
-        } else if (e.key === "?") {
-          document.getElementById("helpDialog").dataset.open = "true";
         } else if (e.key === "Escape") {
           resetAll();
+        }
+      });
+
+      function updateFilterBanner(filteredRows) {
+        const banner = document.getElementById("filterBanner");
+        const text = document.getElementById("filterBannerText");
+        if (!banner || !text) return;
+        const parts = [];
+        if (state.phaseFilter) {
+          parts.push(state.phaseFilter === "leads" ? "Where Send leads" : state.phaseFilter);
+        }
+        if (state.story) parts.push("story preset");
+        if (state.compareWith) {
+          const c = companies.find((x) => x.id === state.compareWith);
+          parts.push("compare: Send vs " + (c ? c.name : state.compareWith));
+        }
+        if (state.groupsActive.size < groups.length) {
+          parts.push(state.groupsActive.size + " groups");
+        }
+        const filtered = parts.length > 0 || filteredRows.length < featureRows.length;
+        banner.classList.toggle("is-active", filtered);
+        if (filtered) {
+          text.innerHTML =
+            "<strong>Showing " +
+            filteredRows.length +
+            " of " +
+            featureRows.length +
+            " features</strong>" +
+            (parts.length ? " · " + parts.join(" · ") : "");
+        }
+      }
+
+      document.getElementById("clearFiltersBtn")?.addEventListener("click", resetAll);
+
+      document.getElementById("filtersPanelBtn")?.addEventListener("click", () => {
+        const panel = document.getElementById("filtersPanel");
+        const btn = document.getElementById("filtersPanelBtn");
+        const open = !panel.classList.contains("is-open");
+        panel.classList.toggle("is-open", open);
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+
+      const popover = document.getElementById("cellPopover");
+      document.getElementById("matrixTable")?.addEventListener("click", (ev) => {
+        const cell = ev.target.closest("td.cell");
+        if (!cell || !popover) return;
+        const note = cell.querySelector(".note")?.textContent || "No additional note.";
+        const status = cell.querySelector(".status")?.textContent?.trim() || "";
+        const company = companies.find((c) => c.id === cell.dataset.company)?.name || cell.dataset.company;
+        popover.innerHTML = '<div class="pop-title">' + company + ": " + status + "</div><p>" + note + "</p>";
+        popover.classList.add("is-open");
+        popover.style.left = Math.min(ev.clientX, window.innerWidth - 320) + "px";
+        popover.style.top = Math.min(ev.clientY, window.innerHeight - 120) + "px";
+        popover.setAttribute("aria-hidden", "false");
+      });
+      document.addEventListener("click", (ev) => {
+        if (!ev.target.closest(".cell-popover") && !ev.target.closest("td.cell")) {
+          popover?.classList.remove("is-open");
+          popover?.setAttribute("aria-hidden", "true");
         }
       });
 
@@ -2332,24 +2583,43 @@
       // INIT
       // ============================================================
       decodeState();
-      if (state.view !== "detail") document.body.dataset.view = state.view;
+      // Narrow viewports can't show the table — coerce to tiles
+      // before any aria-pressed state is rendered, so the toggle stays honest.
+      if (state.view !== "tiles" && window.matchMedia("(max-width: 720px)").matches) {
+        state.view = "tiles";
+      }
+      // Legacy: drop any "heatmap" view that survives in a saved URL hash.
+      if (state.view !== "tiles" && state.view !== "table") {
+        state.view = "tiles";
+      }
+      document.body.dataset.view = state.view || "tiles";
       document.body.dataset.compare = state.compareWith ? "true" : "false";
+      if (state.compactTiles) {
+        document.body.classList.add("compact-tiles");
+        document.getElementById("densityToggle")?.setAttribute("aria-pressed", "true");
+      }
       renderAll();
 
-      // Measure controls bar height and expose it so sticky table headers
-      // park directly beneath it (no double-scroll, no header collision).
-      function measureHeaderOffset() {
-        const bar = document.querySelector(".controls-bar");
-        if (!bar) return;
-        const h = bar.getBoundingClientRect().height;
-        document.documentElement.style.setProperty("--header-offset", `${Math.round(h)}px`);
+      document.getElementById("densityToggle")?.addEventListener("click", (e) => {
+        state.compactTiles = !state.compactTiles;
+        document.body.classList.toggle("compact-tiles", state.compactTiles);
+        e.currentTarget.setAttribute("aria-pressed", state.compactTiles ? "true" : "false");
+        encodeState();
+      });
+
+      const matrixBodyScroller = document.getElementById("matrixBodyScroller");
+      const matrixTable = document.getElementById("matrixTable");
+      function updateHeaderPinnedState() {
+        if (!matrixTable || !matrixBodyScroller) return;
+        const headCell = matrixTable.querySelector("thead th");
+        if (!headCell) return;
+        const scrollerTop = matrixBodyScroller.getBoundingClientRect().top;
+        matrixTable.classList.toggle("is-header-pinned", headCell.getBoundingClientRect().top <= scrollerTop + 2);
       }
-      measureHeaderOffset();
-      if (window.ResizeObserver) {
-        new ResizeObserver(measureHeaderOffset).observe(document.querySelector(".controls-bar"));
-      } else {
-        window.addEventListener("resize", measureHeaderOffset);
-      }
+      window.__updateHeaderPinnedState = updateHeaderPinnedState;
+      matrixBodyScroller?.addEventListener("scroll", updateHeaderPinnedState, { passive: true });
+      window.addEventListener("resize", updateHeaderPinnedState);
+      updateHeaderPinnedState();
 
       window.addEventListener("hashchange", () => {
         // No-op (we own the hash; avoid loops)
