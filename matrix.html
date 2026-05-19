@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta name="description" content="Send competitive feature matrix across 12 neobank and crypto-card competitors." />
+    <meta name="description" content="Send competitive feature matrix across 13 neobank and crypto-card competitors." />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Send · Comp Analysis · v3.1</title>
@@ -1097,7 +1097,7 @@
         <button class="story-card" type="button" data-story="vs" aria-pressed="false">
           <div class="story-eyebrow">Two competitive sets</div>
           <div class="story-title">Fiat-native vs. crypto-native neobanks</div>
-          <p class="story-desc">Fiat-native players (Revolut, Wise, Cash App, Nubank)
+          <p class="story-desc">Fiat-native players (Revolut, Wise, Monzo, Cash App, Nubank)
           lead on the account layer. Crypto-native ones (KAST, Phantom Cash, Ether.fi)
           lead on self-custody and on-chain payments. Send has to win on both fronts.</p>
         </button>
@@ -1220,6 +1220,10 @@
             Nubank (
             <a href="https://nubank.com.br">homepage</a>,
             <a href="https://nubank.com.br/nu/nubank-criptomoeda">Nubank Cripto</a>),
+            Monzo (
+            <a href="https://monzo.com/features/payments">payments</a>,
+            <a href="https://monzo.com/help/monzo-plus/virtual-cards-what">virtual cards</a>,
+            <a href="https://monzo.com/savings-isas/stocks-shares-isa">investments</a>),
             Brighty, Wirex,
             Cash App (
             <a href="https://cash.app">cash.app</a>,
@@ -1260,6 +1264,7 @@
         { id: "revolut", name: "Revolut", category: "mainstream" },
         { id: "wise", name: "Wise", category: "mainstream" },
         { id: "nubank", name: "Nubank", category: "mainstream" },
+        { id: "monzo", name: "Monzo", category: "mainstream" },
         { id: "brighty", name: "Brighty", category: "crypto" },
         { id: "wirex", name: "Wirex", category: "crypto" },
       ];
@@ -1282,6 +1287,7 @@
             revolut: ["yes", "Mobile app"],
             wise: ["yes", "Mobile app"],
             nubank: ["yes", "Mobile app"],
+            monzo: ["yes", "iOS/Android app"],
             brighty: ["yes", "Mobile app"],
             wirex: ["yes", "Mobile app"],
           },
@@ -1302,6 +1308,7 @@
             revolut: ["yes", "Payment links"],
             wise: ["yes", "Wisetag link + QR"],
             nubank: ["partial", "Pix QR/Cobrança; no public profile"],
+            monzo: ["yes", "Monzo.me link + QR"],
             brighty: ["no", ""],
             wirex: ["no", ""],
           },
@@ -1322,6 +1329,7 @@
             revolut: ["partial", "Peer network behavior"],
             wise: ["yes", "Wisetag"],
             nubank: ["no", ""],
+            monzo: ["partial", "Monzo.me; no @handle"],
             brighty: ["no", ""],
             wirex: ["no", ""],
           },
@@ -1342,6 +1350,7 @@
             revolut: ["no", ""],
             wise: ["no", ""],
             nubank: ["no", ""],
+            monzo: ["partial", "Biometrics + magic link"],
             brighty: ["no", ""],
             wirex: ["no", ""],
           },
@@ -1362,6 +1371,7 @@
             revolut: ["yes", "Core account"],
             wise: ["yes", "Local account details"],
             nubank: ["yes", "Digital account"],
+            monzo: ["yes", "UK sort code + account"],
             brighty: ["yes", "IBAN + fiat account"],
             wirex: ["partial", "Multi-currency accounts"],
           },
@@ -1382,6 +1392,7 @@
             revolut: ["yes", "Bank funding"],
             wise: ["yes", "Bank transfer funding"],
             nubank: ["yes", "Account deposits"],
+            monzo: ["yes", "Bank transfer + direct deposit"],
             brighty: ["yes", "SEPA/FPS/FedWire"],
             wirex: ["yes", "SEPA/FPS/ACH/PIX"],
           },
@@ -1402,6 +1413,7 @@
             revolut: ["partial", "Funding varies by market"],
             wise: ["yes", "Debit card funding"],
             nubank: ["partial", "Card/account flows"],
+            monzo: ["partial", "Limited debit card top-up"],
             brighty: ["no", ""],
             wirex: ["no", ""],
           },
@@ -1422,6 +1434,7 @@
             revolut: ["yes", "36+ currencies"],
             wise: ["yes", "40+ currencies"],
             nubank: ["no", "Market-local"],
+            monzo: ["partial", "GBP account; send 38 currencies"],
             brighty: ["yes", "Fiat + crypto"],
             wirex: ["yes", "Multi-currency"],
           },
@@ -1442,6 +1455,7 @@
             revolut: ["partial", "Custodial crypto"],
             wise: ["no", ""],
             nubank: ["yes", "Nubank Cripto + USDC"],
+            monzo: ["no", ""],
             brighty: ["yes", "Stablecoins + crypto"],
             wirex: ["yes", "Stablecoins + crypto"],
           },
@@ -1462,6 +1476,7 @@
             revolut: ["no", ""],
             wise: ["no", ""],
             nubank: ["no", ""],
+            monzo: ["no", ""],
             brighty: ["no", ""],
             wirex: ["no", ""],
           },
@@ -1482,6 +1497,7 @@
             revolut: ["yes", "Revolut-to-Revolut"],
             wise: ["partial", "Fast transfers, not social-first"],
             nubank: ["yes", "Pix"],
+            monzo: ["yes", "Monzo-to-Monzo instant"],
             brighty: ["partial", "Transfers supported"],
             wirex: ["yes", "Wirex transfers"],
           },
@@ -1502,6 +1518,7 @@
             revolut: ["yes", "140+ countries"],
             wise: ["yes", "Core product"],
             nubank: ["no", "Not a global focus"],
+            monzo: ["yes", "38 currencies via Monzo"],
             brighty: ["yes", "Fiat + crypto rails"],
             wirex: ["yes", "Global transfers"],
           },
@@ -1522,6 +1539,7 @@
             revolut: ["partial", "Asset-dependent"],
             wise: ["no", ""],
             nubank: ["partial", "Gradual rollout"],
+            monzo: ["no", ""],
             brighty: ["yes", "Crypto rails"],
             wirex: ["yes", "External wallets"],
           },
@@ -1542,6 +1560,7 @@
             revolut: ["yes", "Bank transfers"],
             wise: ["yes", "Bank payouts"],
             nubank: ["yes", "Bank account"],
+            monzo: ["yes", "Bank transfers"],
             brighty: ["yes", "Fiat withdrawals"],
             wirex: ["yes", "Cash-out flows"],
           },
@@ -1562,6 +1581,7 @@
             revolut: ["yes", "Debit cards"],
             wise: ["yes", "Wise Card"],
             nubank: ["yes", "Nubank Card"],
+            monzo: ["yes", "Hot coral debit card"],
             brighty: ["yes", "Mastercard"],
             wirex: ["yes", "Visa/Mastercard"],
           },
@@ -1582,6 +1602,7 @@
             revolut: ["yes", "Virtual + disposable"],
             wise: ["yes", "Virtual card"],
             nubank: ["yes", "Digital card"],
+            monzo: ["partial", "Plus/Extra/Perks/Max tiers"],
             brighty: ["partial", "Card support"],
             wirex: ["yes", "Virtual + physical card"],
           },
@@ -1602,6 +1623,7 @@
             revolut: ["yes", "Wallet pay"],
             wise: ["yes", "Wallet pay"],
             nubank: ["yes", "Wallet pay"],
+            monzo: ["yes", "Wallet pay"],
             brighty: ["yes", "Apple Pay + Google Pay"],
             wirex: ["yes", "Wallet pay"],
           },
@@ -1622,6 +1644,7 @@
             revolut: ["yes", "Card network"],
             wise: ["yes", "160 countries"],
             nubank: ["partial", "Card network, market-led"],
+            monzo: ["yes", "Mastercard acceptance"],
             brighty: ["yes", "Mastercard global"],
             wirex: ["yes", "80M+ merchants"],
           },
@@ -1642,6 +1665,7 @@
             revolut: ["yes", "ATM support"],
             wise: ["yes", "ATM support"],
             nubank: ["partial", "Market-dependent"],
+            monzo: ["yes", "Fee-free EEA; limits abroad"],
             brighty: ["partial", "Card-led"],
             wirex: ["yes", "Free allowance"],
           },
@@ -1662,6 +1686,7 @@
             revolut: ["yes", "Savings"],
             wise: ["yes", "Wise Interest"],
             nubank: ["yes", "Yield + Caixinhas"],
+            monzo: ["yes", "Savings Pots up to 3.25% AER"],
             brighty: ["yes", "Earning vaults"],
             wirex: ["yes", "Yield products"],
           },
@@ -1682,6 +1707,7 @@
             revolut: ["yes", "Stocks + ETFs"],
             wise: ["no", ""],
             nubank: ["yes", "Investments"],
+            monzo: ["yes", "Stocks & Shares ISA"],
             brighty: ["no", ""],
             wirex: ["no", ""],
           },
@@ -1702,6 +1728,7 @@
             revolut: ["yes", "Crypto trading"],
             wise: ["no", ""],
             nubank: ["yes", "Nubank Cripto"],
+            monzo: ["no", "No in-app crypto trading"],
             brighty: ["partial", "Crypto support"],
             wirex: ["yes", "Exchange"],
           },
@@ -1722,6 +1749,7 @@
             revolut: ["yes", "Points/perks"],
             wise: ["no", ""],
             nubank: ["yes", "Rewards/cashback"],
+            monzo: ["yes", "Merchant cashback offers"],
             brighty: ["no", ""],
             wirex: ["yes", "Cryptoback"],
           },
@@ -1742,6 +1770,7 @@
             revolut: ["yes", "Controls"],
             wise: ["yes", "2FA + card controls"],
             nubank: ["yes", "App controls"],
+            monzo: ["yes", "Freeze + limits + biometrics"],
             brighty: ["yes", "Security messaging"],
             wirex: ["yes", "SCA + controls"],
           },
@@ -1762,6 +1791,7 @@
             revolut: ["yes", "Fraud prevention"],
             wise: ["yes", "Transaction checks"],
             nubank: ["yes", "Scam alerts"],
+            monzo: ["yes", "Instant notifications"],
             brighty: ["partial", "Security, less alert-led"],
             wirex: ["yes", "Anti-fraud"],
           },
@@ -1782,6 +1812,7 @@
             revolut: ["yes", "Support"],
             wise: ["yes", "Support"],
             nubank: ["yes", "Support as product"],
+            monzo: ["yes", "24/7 in-app support"],
             brighty: ["yes", "Help center"],
             wirex: ["yes", "Help + support"],
           },
